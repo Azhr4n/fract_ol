@@ -22,10 +22,10 @@ void	calculateJulia(t_var *vars, t_complex c, float zoom, int index_window)
 	int			i;
 
 	pos.x = 0;
-	while (pos.x < WIDTH_WINDOW)
+	while (pos.x < WIDTH_WINDOW / 2)
 	{
 		pos.y = 0;
-		while (pos.y < HEIGHT_WINDOW)
+		while (pos.y < HEIGHT_WINDOW / 2)
 		{
 			new.real = 1.5 * (pos.x - WIDTH_WINDOW / 2) / (0.5 * zoom * WIDTH_WINDOW) + 0;
 			new.im = (pos.y - HEIGHT_WINDOW / 2) / (0.5 * zoom * HEIGHT_WINDOW) + 0;

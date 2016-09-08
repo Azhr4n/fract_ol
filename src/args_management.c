@@ -40,6 +40,10 @@ void		setVars(t_var *vars)
 	vars->function_pointers[MANDELBROT] = mandelbrot;
 	vars->mlx_core = mlx_init();
 	vars->nb_windows = 0;
+	vars->dir.x = 0;
+	vars->dir.y = 0;
+	vars->recalc = 0;
+	ft_putendl("Variables initialized.");
 }
 
 void		cleanVars(t_var *vars)

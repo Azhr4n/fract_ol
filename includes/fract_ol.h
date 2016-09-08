@@ -21,6 +21,10 @@
 # define DEFAULT_IM 0.27015
 
 # define ESC_KEYCODE 53
+# define UP 126
+# define DOWN 125
+# define LEFT 123
+# define RIGHT 124
 
 # define MAX_ITERATIONS 300
 
@@ -69,6 +73,8 @@ typedef struct		s_var
 	int				endian;
 	int				bpp;
 	int				nb_windows;
+	t_vector		dir;
+	int				recalc;
 }					t_var;
 
 void	main_loop(t_var *vars);

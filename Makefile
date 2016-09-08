@@ -16,7 +16,9 @@ CFLAGS = -Wall -Wextra -Werror
 NAME = fractol
 
 SRC =	src/main.c				\
+		src/draw.c				\
 		src/loop.c				\
+		src/julia.c				\
 		src/args_management.c
 
 OBJ = $(SRC:.c=.o)

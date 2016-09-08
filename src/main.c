@@ -30,16 +30,17 @@ void	strLower(char *str)
 void	mandelbrot(void *data)
 {
 	t_var	*vars;
+	int		index;
 
 	vars = (t_var *)data;
-	vars->mlx_windows[vars->max_window] = mlx_new_window(vars->mlx_core,
+	index = getIndexFocus(vars->focus, vars->nb_windows, MANDELBROT);
+	vars->mlx_windows[index] = mlx_new_window(vars->mlx_core,
 		WIDTH_WINDOW, HEIGHT_WINDOW, "Mandelbrot");
-	vars->mlx_images[vars->max_window] = mlx_new_image(vars->mlx_core,
+	vars->mlx_images[index] = mlx_new_image(vars->mlx_core,
 		WIDTH_WINDOW, HEIGHT_WINDOW);
-	vars->addr_images[vars->max_window] = mlx_get_data_addr(
-		vars->mlx_images[vars->max_window],&vars->bpp,
+	vars->addr_images[index] = mlx_get_data_addr(
+		vars->mlx_images[index],&vars->bpp,
 		&vars->size_line, &vars->endian);
-	vars->max_window++;
 }
 
 int		main(int ac, char **av)

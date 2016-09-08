@@ -15,27 +15,34 @@
 
 #include "fract_ol.h"
 
-void	setVars(t_var *vars)
+#include <stdio.h>
+
+int			getIndexFocus(int *tab, int len, int focus)
 {
 	int		i;
 
+	i = 0;
+	while (i < len)
+	{
+		if (tab[i] == focus)
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+void		setVars(t_var *vars)
+{
 	vars->args = (char **)malloc(sizeof(char *) * NB_ARGS);
 	vars->args[0] = ft_strdup("julia");
 	vars->args[1] = ft_strdup("mandelbrot");
 	vars->function_pointers[JULIA] = julia;
 	vars->function_pointers[MANDELBROT] = mandelbrot;
-	i = 0;
-	while (i < NB_ARGS)
-	{
-		vars->args_valid[i] = 0;
-		i++;
-	}
 	vars->mlx_core = mlx_init();
 	vars->nb_windows = 0;
-	vars->max_window = 0;
 }
 
-void	cleanVars(t_var *vars)
+void		cleanVars(t_var *vars)
 {
 	int	i;
 
@@ -56,10 +63,31 @@ void	cleanVars(t_var *vars)
 	free(vars->addr_images);
 	free(vars->mlx_images);
 	free(vars->mlx_windows);
+	free(vars->focus);
+	free(vars->fractal_values);
 	ft_putendl("Vars cleared.");
 }
 
-char	argsValid(t_var *vars, int ac, char **av)
+static void	presetFocus(t_var *vars, int ac, char **av)
+{
+	int		i;
+	int		j;
+
+	vars->focus = (int *)malloc(sizeof(int) * vars->nb_windows);
+	i = 0;
+	while (++i < ac)
+	{
+		j = 0;
+		while (j < NB_ARGS)
+		{
+			if (strcmp(av[i], vars->args[j]) == 0)
+				vars->focus[i - 1] = j;
+			j++;
+		}
+	}
+}
+
+char		argsValid(t_var *vars, int ac, char **av)
 {
 	int		i;
 	int		j;
@@ -76,7 +104,6 @@ char	argsValid(t_var *vars, int ac, char **av)
 			if (strcmp(av[i], vars->args[j]) == 0)
 			{
 				vars->nb_windows++;
-				vars->args_valid[j] = 1;
 				safe = 1;
 				break;
 			}
@@ -85,5 +112,6 @@ char	argsValid(t_var *vars, int ac, char **av)
 		if (safe == 0)
 			return 0;
 	}
+	presetFocus(vars, ac, av);
 	return 1;
 }

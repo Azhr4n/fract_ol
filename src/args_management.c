@@ -69,15 +69,36 @@ void		cleanVars(t_var *vars)
 	free(vars->mlx_windows);
 	free(vars->focus);
 	free(vars->fractal_values);
-	ft_putendl("Vars cleared.");
+	ft_putendl("Variables cleared.");
 }
 
-static void	presetFocus(t_var *vars, int ac, char **av)
+static int	checkDouble(t_var *vars)
 {
 	int		i;
 	int		j;
 
-	vars->focus = (int *)malloc(sizeof(int) * vars->nb_windows);
+	i = 0;
+	while (i < vars->nb_windows - 1)
+	{
+		j = i + 1;
+		while (j < vars->nb_windows)
+		{
+			if (vars->focus[i] == vars->focus[j])
+				return (0);
+			j++;
+		}
+		i++;
+	}
+	return (1);
+}
+
+static int	presetFocus(t_var *vars, int ac, char **av)
+{
+	int		i;
+	int		j;
+
+	if ((vars->focus = (int *)malloc(sizeof(int) * vars->nb_windows)) == NULL)
+		return (0);
 	i = 0;
 	while (++i < ac)
 	{
@@ -89,6 +110,13 @@ static void	presetFocus(t_var *vars, int ac, char **av)
 			j++;
 		}
 	}
+	if (!checkDouble(vars))
+	{
+		free(vars->focus);
+		return (0);
+	}
+	else
+		return (1);
 }
 
 char		argsValid(t_var *vars, int ac, char **av)
@@ -116,6 +144,5 @@ char		argsValid(t_var *vars, int ac, char **av)
 		if (safe == 0)
 			return 0;
 	}
-	presetFocus(vars, ac, av);
-	return 1;
+	return (presetFocus(vars, ac, av));
 }

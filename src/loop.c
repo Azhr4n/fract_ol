@@ -47,13 +47,13 @@ static int myKeyPressed(int keycode, void *param)
 	t_var	*vars;
 
 	vars = (t_var *)param;
-	if (keycode == UP)
+	if (keycode == UP && vars->dir.y == 0)
 		vars->dir.y += -1;
-	if (keycode == DOWN)
+	if (keycode == DOWN && vars->dir.y == 0)
 		vars->dir.y += 1;
-	if (keycode == LEFT)
+	if (keycode == LEFT && vars->dir.x == 0)
 		vars->dir.x += -1;
-	if (keycode == RIGHT)
+	if (keycode == RIGHT && vars->dir.x == 0)
 		vars->dir.x += 1;
 	return (0);
 }
@@ -69,13 +69,13 @@ static int myKeyReleased(int keycode, void *param)
 		exit(0);
 	}
 	if (keycode == UP)
-		vars->dir.y += 1;
+		vars->dir.y = 0;
 	if (keycode == DOWN)
-		vars->dir.y += -1;
+		vars->dir.y = 0;
 	if (keycode == LEFT)
-		vars->dir.x += 1;
+		vars->dir.x = 0;
 	if (keycode == RIGHT)
-		vars->dir.x += -1;
+		vars->dir.x = 0;
 	return (0);
 }
 
@@ -88,12 +88,12 @@ static int myButtonHook(int button, int x, int y, void *param)
 	vars = (t_var *)param;
 	if (button == 4)
 	{
-		vars->fractal_values[0].zoom += 1;
+		vars->fractal_values[0].zoom *= 1.1;
 		vars->recalc = 1;
 	}
 	else if (button == 5)
 	{
-		vars->fractal_values[0].zoom -= 1;
+		vars->fractal_values[0].zoom /= 1.1;
 		vars->recalc = 1;
 	}
 	return (1);
@@ -104,9 +104,6 @@ static int	refresh(void *param)
 	t_var	*vars;
 
 	vars = (t_var *)param;
-
-	printf("dir.x : %d, dir.y : %d\n", vars->dir.x, vars->dir.y);
-
 	if (vars->dir.x != 0 || vars->dir.y != 0)
 		vars->recalc = 1;
 	if (vars->dir.x > 0)
@@ -117,7 +114,6 @@ static int	refresh(void *param)
 		vars->fractal_values[0].c.im += 0.0001;
 	else if (vars->dir.y < 0)
 		vars->fractal_values[0].c.im -= 0.0001;
-
 	if (vars->recalc)
 	{
 		calculateJulia(vars, vars->fractal_values[0].c, vars->fractal_values[0].zoom, 0);
@@ -161,10 +157,8 @@ void		main_loop(t_var *vars)
 	{
 		mlx_mouse_hook(vars->mlx_windows[i], myButtonHook, vars);
 		mlx_hook(vars->mlx_windows[i], 6, (1L<<6), myMouseHook, vars);
-
 		mlx_hook(vars->mlx_windows[i], 2, (1L<<0), myKeyPressed, vars);
 		mlx_hook(vars->mlx_windows[i], 3, (1L<<1), myKeyReleased, vars);
-
 		i++;
 	}
 	mlx_loop_hook(vars->mlx_core, refresh, vars);

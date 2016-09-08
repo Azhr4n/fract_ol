@@ -1,18 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   julia.c                                            :+:      :+:    :+:   */
+/*   mandelbrot.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pivanovi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/07 16:52:23 by pivanovi          #+#    #+#             */
-/*   Updated: 2016/09/07 16:52:23 by pivanovi         ###   ########.fr       */
+/*   Created: 2016/09/08 16:30:40 by pivanovi          #+#    #+#             */
+/*   Updated: 2016/09/08 16:30:43 by pivanovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fract_ol.h"
+#include "libft.h"
 
-void	calculateJulia(t_var *vars, t_complex c, float zoom, int index_window)
+#include <stdio.h>
+
+void	calculateMandelbrot(t_var *vars, t_complex c, float zoom, int index_window)
 {
 	t_complex	old;
 	t_complex	new;
@@ -25,8 +28,10 @@ void	calculateJulia(t_var *vars, t_complex c, float zoom, int index_window)
 		pos.y = 0;
 		while (pos.y < HEIGHT_WINDOW)
 		{
-			new.real = 1.5 * (pos.x - WIDTH_WINDOW / 2) / (0.5 * zoom * WIDTH_WINDOW) + 0;
-			new.im = (pos.y - HEIGHT_WINDOW / 2) / (0.5 * zoom * HEIGHT_WINDOW) + 0;
+			c.real = 1.5 * (pos.x - WIDTH_WINDOW / 2) / (0.5 * zoom + WIDTH_WINDOW) + 0;
+			c.im = (pos.y - HEIGHT_WINDOW / 2) / (0.5 * zoom + HEIGHT_WINDOW) + 0;
+			new.real = 0;
+			new.im = 0;
 			i = 0;
 			while (i < MAX_ITERATIONS)
 			{
@@ -45,20 +50,23 @@ void	calculateJulia(t_var *vars, t_complex c, float zoom, int index_window)
 	}
 }
 
-void	julia(void *data)
+void	mandelbrot(void *data)
 {
 	t_var		*vars;
 	int			index;
 
+	ft_putendl("MNADE");
 	vars = (t_var *)data;
-	index = getIndexFocus(vars->focus, vars->nb_windows, JULIA);
+	index = getIndexFocus(vars->focus, vars->nb_windows, MANDELBROT);
 	vars->mlx_windows[index] = mlx_new_window(vars->mlx_core,
-		WIDTH_WINDOW, HEIGHT_WINDOW, "Julia");
+		WIDTH_WINDOW, HEIGHT_WINDOW, "Mandelbrot");
 	vars->mlx_images[index] = mlx_new_image(vars->mlx_core,
 		WIDTH_WINDOW, HEIGHT_WINDOW);
 	vars->addr_images[index] = mlx_get_data_addr(
 		vars->mlx_images[index],&vars->bpp,
 		&vars->size_line, &vars->endian);
-	calculateJulia(vars, vars->fractal_values[index].c, vars->fractal_values[index].zoom, index);
+	calculateMandelbrot(vars, vars->fractal_values[index].c, vars->fractal_values[index].zoom, index);
 	mlx_put_image_to_window(vars->mlx_core, vars->mlx_windows[index], vars->mlx_images[index], 0, 0);
+	ft_putendl("END");
 }
+

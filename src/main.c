@@ -27,22 +27,6 @@ void	strLower(char *str)
 	}
 }
 
-void	mandelbrot(void *data)
-{
-	t_var	*vars;
-	int		index;
-
-	vars = (t_var *)data;
-	index = getIndexFocus(vars->focus, vars->nb_windows, MANDELBROT);
-	vars->mlx_windows[index] = mlx_new_window(vars->mlx_core,
-		WIDTH_WINDOW, HEIGHT_WINDOW, "Mandelbrot");
-	vars->mlx_images[index] = mlx_new_image(vars->mlx_core,
-		WIDTH_WINDOW, HEIGHT_WINDOW);
-	vars->addr_images[index] = mlx_get_data_addr(
-		vars->mlx_images[index],&vars->bpp,
-		&vars->size_line, &vars->endian);
-}
-
 int		main(int ac, char **av)
 {
 	t_var	vars;
@@ -51,7 +35,11 @@ int		main(int ac, char **av)
 	if (ac > 1)
 	{
 		if (argsValid(&vars, ac, av) == 0)
+		{
+			free(vars.args);
 			ft_putendl("Arguments are not valids.");
+			return (0);
+		}
 		else
 			main_loop(&vars);
 	}

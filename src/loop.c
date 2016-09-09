@@ -134,17 +134,6 @@ static int	refresh(void *param)
 	int		i;
 
 	vars = (t_var *)param;
-	// if (vars->dir.x != 0 || vars->dir.y != 0)
-		// vars->recalc = 1;
-	// if (vars->dir.x > 0)
-		// vars->fractal_values[0].c.real += 0.0001;
-	// else if (vars->dir.x < 0)
-		// vars->fractal_values[0].c.real -= 0.0001;
-	// if (vars->dir.y > 0)
-		// vars->fractal_values[0].c.im += 0.0001;
-	// else if (vars->dir.y < 0)
-		// vars->fractal_values[0].c.im -= 0.0001;
-
 	i = 0;
 	while (i < vars->nb_windows)
 	{

@@ -27,6 +27,7 @@
 # define RIGHT 124
 
 # define MAX_ITERATIONS 300
+# define NB_THREADS 2
 
 # define V_VALUES vars->fractals[index].values
 
@@ -59,6 +60,12 @@ typedef struct		s_vector
 	int				x;
 	int				y;
 }					t_vector;
+
+typedef struct		s_area
+{
+	t_vector		start;
+	t_vector		end;
+}					t_area;
 
 typedef struct		s_values
 {

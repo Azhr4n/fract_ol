@@ -5,43 +5,43 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pivanovi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/07 12:38:18 by pivanovi          #+#    #+#             */
-/*   Updated: 2016/09/07 12:38:20 by pivanovi         ###   ########.fr       */
+/*   Created: 2016/09/09 12:38:53 by pivanovi          #+#    #+#             */
+/*   Updated: 2016/09/09 12:38:53 by pivanovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <libft.h>
+#include <pthread.h>
+#include <string.h>
 
-#include "fract_ol.h"
+#include <stdio.h>
 
-void	strLower(char *str)
+void	*print(void *arg)
 {
-	while (*str != 0)
-	{
-		*str = (char)ft_tolower(*str);
-		str++;
-	}
+	int	*ptr;
+
+	ptr = arg;
+	printf("%d\n", *ptr);
+
+	return (NULL);
 }
 
-int		main(int ac, char **av)
+int main(void)
 {
-	t_var	vars;
+	pthread_t	thread[4];
+	int			tab[4][1];
+	void		*ret;
+	void		*data;
+	int			i;
 
-	setVars(&vars);
-	if (ac > 1 && ac <= 6)
+
+	for (i = 0; i < 4; i++)
 	{
-		if (argsValid(&vars, ac, av) == 0)
-		{
-			free(vars.args);
-			ft_putendl("Arguments are not valids.");
-			return (0);
-		}
-		else
-			main_loop(&vars);
+		tab[i][0] = i;
+		data = tab[i];
+		pthread_create(&thread[i], NULL, print, data);
 	}
-	else
-		ft_putendl("Either too much args or not any.");
-	cleanVars(&vars);
+	for (i = 0; i < 4; i++)
+		pthread_join(thread[i], &ret);
+
 	return (0);
 }

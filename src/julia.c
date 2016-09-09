@@ -38,27 +38,23 @@ void		julia(void *mlx_core, t_fractal *fractal)
 {
 	int		i;
 
-	ft_putendl("In julia");
-
-	fractal->values.pos.x = 0;
-	while (fractal->values.pos.x < WIDTH_WINDOW)
+	fractal->values.vec.x = 0;
+	while (fractal->values.vec.x < WIDTH_WINDOW)
 	{
-		fractal->values.pos.y = 0;
-		while (fractal->values.pos.y < HEIGHT_WINDOW)
+		fractal->values.vec.y = 0;
+		while (fractal->values.vec.y < HEIGHT_WINDOW)
 		{
-			fractal->values.new.real = 1.5 * (fractal->values.pos.x - WIDTH_WINDOW / 2)
+			fractal->values.new.real = 1.5 * (fractal->values.vec.x - WIDTH_WINDOW / 2)
 				/ (0.5 * fractal->values.zoom * WIDTH_WINDOW) + 0;
-			fractal->values.new.im = (fractal->values.pos.y - HEIGHT_WINDOW / 2)
+			fractal->values.new.im = (fractal->values.vec.y - HEIGHT_WINDOW / 2)
 				/ (0.5 * fractal->values.zoom * HEIGHT_WINDOW) + 0;
 			i = iteratingJulia(fractal);
 			pixelSet(mlx_core, fractal, 0x010101 * i);
-			fractal->values.pos.y++;
+			fractal->values.vec.y++;
 		}
-		fractal->values.pos.x++;
+		fractal->values.vec.x++;
 	}
 	mlx_put_image_to_window(mlx_core, fractal->mlx_window,
 		fractal->mlx_image, 0, 0);
-	fractal->recalc = 0;
-	
-	ft_putendl("Out Julia");
+	fractal->print = 0;
 }

@@ -18,15 +18,11 @@ void	pixelSet(void *mlx_core, t_fractal *fractal, int color)
 {
 	unsigned int	mlx_color;
 
-	ft_putendl("In pixelset");
-
 	mlx_color = mlx_get_color_value(mlx_core, color);
-	fractal->addr_image[(fractal->values.pos.x * fractal->bpp / 8) 
-		+ fractal->values.pos.y * fractal->size_line] = (color & 0xFF0000) >> 16;
-	fractal->addr_image[(fractal->values.pos.x * fractal->bpp / 8) 
-		+ fractal->values.pos.y * fractal->size_line + 1] = (color & 0xFF00) >> 8;
-	fractal->addr_image[(fractal->values.pos.x * fractal->bpp / 8) 
-		+ fractal->values.pos.y * fractal->size_line + 2] = (color & 0xFF) >> 0;
-	
-	ft_putendl("Out pixelset");
+	fractal->addr_image[(fractal->values.vec.x * fractal->bpp / 8) 
+		+ fractal->values.vec.y * fractal->size_line] = (color & 0xFF0000) >> 16;
+	fractal->addr_image[(fractal->values.vec.x * fractal->bpp / 8) 
+		+ fractal->values.vec.y * fractal->size_line + 1] = (color & 0xFF00) >> 8;
+	fractal->addr_image[(fractal->values.vec.x * fractal->bpp / 8) 
+		+ fractal->values.vec.y * fractal->size_line + 2] = (color & 0xFF) >> 0;
 }

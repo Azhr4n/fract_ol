@@ -42,11 +42,12 @@ void		setVars(t_var *vars)
 	vars->args[0] = ft_strdup("julia");
 	vars->args[1] = ft_strdup("mandelbrot");
 	vars->function_pointers[JULIA] = julia;
-	// vars->function_pointers[MANDELBROT] = mandelbrot;
+	vars->function_pointers[MANDELBROT] = mandelbrot;
 	vars->mlx_core = mlx_init();
 	vars->nb_windows = 0;
 	vars->dir.x = 0;
 	vars->dir.y = 0;
+	vars->fract_set = 0;
 }
 
 void		cleanVars(t_var *vars)
@@ -60,7 +61,17 @@ void		cleanVars(t_var *vars)
 		i++;
 	}
 	free(vars->args);
-	ft_putendl("Variables cleared.");
+	if (vars->fract_set)
+	{
+		i = 0;
+		while (i < vars->nb_windows)
+		{
+			mlx_destroy_image(vars->mlx_core, vars->fractals[i].mlx_image);
+			mlx_destroy_window(vars->mlx_core, vars->fractals[i].mlx_window);
+			i++;
+		}
+		free(vars->fractals);
+	}
 }
 
 static void	allocateVars(t_var *vars, int index, int type)
@@ -71,10 +82,11 @@ static void	allocateVars(t_var *vars, int index, int type)
 	vars->fractals[index].mlx_image = mlx_new_image(vars->mlx_core,
 		WIDTH_WINDOW, HEIGHT_WINDOW);
 	vars->fractals[index].addr_image = 
-		mlx_get_data_addr(&vars->fractals[index].mlx_image,
+		mlx_get_data_addr(vars->fractals[index].mlx_image,
 			&vars->fractals[index].bpp,	&vars->fractals[index].size_line,
 			&vars->fractals[index].endian);
-	vars->fractals[index].recalc = 1;
+	vars->fract_set = 1;
+	vars->fractals[index].print = 1;
 }
 
 static void	presetStruct(t_var *vars, int ac, char **av)
@@ -82,7 +94,8 @@ static void	presetStruct(t_var *vars, int ac, char **av)
 	int		i;
 	int		j;
 
-	if ((vars->fractals = (t_fractal *)malloc(sizeof(t_fractal) * vars->nb_windows)) == NULL)
+	if ((vars->fractals =
+		(t_fractal *)malloc(sizeof(t_fractal) * vars->nb_windows)) == NULL)
 	{
 		ft_putendl("Malloc failed.");
 		exit(-1);

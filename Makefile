@@ -19,6 +19,7 @@ SRC =	src/main.c				\
 		src/draw.c				\
 		src/loop.c				\
 		src/julia.c				\
+		src/mandelbrot.c		\
 		src/args_management.c
 
 OBJ = $(SRC:.c=.o)

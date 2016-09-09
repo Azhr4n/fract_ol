@@ -32,7 +32,7 @@ int		main(int ac, char **av)
 	t_var	vars;
 
 	setVars(&vars);
-	if (ac > 1)
+	if (ac > 1 && ac <= 6)
 	{
 		if (argsValid(&vars, ac, av) == 0)
 		{
@@ -44,7 +44,7 @@ int		main(int ac, char **av)
 			main_loop(&vars);
 	}
 	else
-		ft_putendl("No fractal specified.");
+		ft_putendl("Either too much args or not any.");
 	cleanVars(&vars);
 	return (0);
 }

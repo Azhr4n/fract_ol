@@ -28,6 +28,8 @@
 
 # define MAX_ITERATIONS 300
 
+# define V_VALUES vars->fractals[index].values
+
 #include <mlx.h>
 
 enum {
@@ -35,8 +37,6 @@ enum {
 	MANDELBROT,
 	NB_ARGS
 };
-
-typedef void (*t_fp) (void *);
 
 
 
@@ -55,42 +55,50 @@ typedef struct		s_vector
 typedef struct		s_values
 {
 	t_complex		c;
+	t_complex		old;
+	t_complex		new;
+	t_vector		pos;
 	float			zoom;
 }					t_values;
+
+typedef struct		s_fractal
+{
+	int				type;
+	void			*mlx_window;
+	void			*mlx_image;
+	char			*addr_image;
+	int				size_line;
+	int				endian;
+	int				bpp;
+	int				recalc;
+	t_values		values;
+}					t_fractal;
+
+typedef void (*t_fp) (void *, t_fractal *);
 
 typedef struct		s_var
 {
 	t_fp			function_pointers[NB_ARGS];
-	int				*focus;
-	int				actual_focus;
 	char			**args;
-	void			*mlx_core;
-	void			**mlx_windows;
-	void			**mlx_images;
-	char			**addr_images;
-	t_values		*fractal_values;
-	int				size_line;
-	int				endian;
-	int				bpp;
 	int				nb_windows;
+	void			*mlx_core;
+	t_fractal		*fractals;
 	t_vector		dir;
-	int				recalc;
 }					t_var;
 
 void	main_loop(t_var *vars);
 
 void	setVars(t_var *vars);
 void	cleanVars(t_var *vars);
-char	argsValid(t_var *vars, int ac, char **av);
+int		argsValid(t_var *vars, int ac, char **av);
 
 int		getIndexFocus(int *tab, int len, int focus);
 
-void	julia(void *data);
-void	calculateJulia(t_var *vars, t_complex c, float zoom, int index_window);
+void	julia(void *mlx_core, t_fractal *fractal);
 
 void	mandelbrot(void *data);
 
-void	pixelSet(t_var *vars, t_vector pos, int color, int index_window);
+void	pixelSet(void *mlx_core, t_fractal *fractal, int color);
 
 void	strLower(char *str);
 

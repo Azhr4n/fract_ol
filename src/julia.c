@@ -10,55 +10,55 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <libft.h>
+
 #include "fract_ol.h"
 
-void	calculateJulia(t_var *vars, t_complex c, float zoom, int index_window)
+static int	iteratingJulia(t_fractal *fractal)
 {
-	t_complex	old;
-	t_complex	new;
-	t_vector	pos;
-	int			i;
+	int		i;
 
-	pos.x = 0;
-	while (pos.x < WIDTH_WINDOW)
+	i = 0;
+	while (i < MAX_ITERATIONS)
 	{
-		pos.y = 0;
-		while (pos.y < HEIGHT_WINDOW)
-		{
-			new.real = 1.5 * (pos.x - WIDTH_WINDOW / 2) / (0.5 * zoom * WIDTH_WINDOW) + 0;
-			new.im = (pos.y - HEIGHT_WINDOW / 2) / (0.5 * zoom * HEIGHT_WINDOW) + 0;
-			i = 0;
-			while (i < MAX_ITERATIONS)
-			{
-				old.real = new.real;
-				old.im = new.im;
-				new.real = old.real * old.real - old.im * old.im + c.real;
-				new.im = 2 * old.real * old.im + c.im;
-				if ((new.real * new.real + new.im * new.im) > 4)
-					break;
-				i++;
-			}
-			pixelSet(vars, pos, 0x010101 * i, index_window);
-			pos.y++;
-		}
-		pos.x++;
+		fractal->values.old.real = fractal->values.new.real;
+		fractal->values.old.im = fractal->values.new.im;
+		fractal->values.new.real = fractal->values.old.real * fractal->values.old.real
+			- fractal->values.old.im * fractal->values.old.im + fractal->values.c.real;
+		fractal->values.new.im = 2 * fractal->values.old.real * fractal->values.old.im + fractal->values.c.im;
+		if ((fractal->values.new.real * fractal->values.new.real
+			+ fractal->values.new.im * fractal->values.new.im) > 4)
+			break;
+		i++;
 	}
+	return (i);
 }
 
-void	julia(void *data)
+void		julia(void *mlx_core, t_fractal *fractal)
 {
-	t_var		*vars;
-	int			index;
+	int		i;
 
-	vars = (t_var *)data;
-	index = getIndexFocus(vars->focus, vars->nb_windows, JULIA);
-	vars->mlx_windows[index] = mlx_new_window(vars->mlx_core,
-		WIDTH_WINDOW, HEIGHT_WINDOW, "Julia");
-	vars->mlx_images[index] = mlx_new_image(vars->mlx_core,
-		WIDTH_WINDOW, HEIGHT_WINDOW);
-	vars->addr_images[index] = mlx_get_data_addr(
-		vars->mlx_images[index],&vars->bpp,
-		&vars->size_line, &vars->endian);
-	calculateJulia(vars, vars->fractal_values[index].c, vars->fractal_values[index].zoom, index);
-	mlx_put_image_to_window(vars->mlx_core, vars->mlx_windows[index], vars->mlx_images[index], 0, 0);
+	ft_putendl("In julia");
+
+	fractal->values.pos.x = 0;
+	while (fractal->values.pos.x < WIDTH_WINDOW)
+	{
+		fractal->values.pos.y = 0;
+		while (fractal->values.pos.y < HEIGHT_WINDOW)
+		{
+			fractal->values.new.real = 1.5 * (fractal->values.pos.x - WIDTH_WINDOW / 2)
+				/ (0.5 * fractal->values.zoom * WIDTH_WINDOW) + 0;
+			fractal->values.new.im = (fractal->values.pos.y - HEIGHT_WINDOW / 2)
+				/ (0.5 * fractal->values.zoom * HEIGHT_WINDOW) + 0;
+			i = iteratingJulia(fractal);
+			pixelSet(mlx_core, fractal, 0x010101 * i);
+			fractal->values.pos.y++;
+		}
+		fractal->values.pos.x++;
+	}
+	mlx_put_image_to_window(mlx_core, fractal->mlx_window,
+		fractal->mlx_image, 0, 0);
+	fractal->recalc = 0;
+	
+	ft_putendl("Out Julia");
 }

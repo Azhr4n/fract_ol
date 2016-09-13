@@ -11,54 +11,85 @@
 /* ************************************************************************** */
 
 #include <libft.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 #include "fract_ol.h"
 
 #include <stdio.h>
 
-// static int	iteratingMandelbrot(t_fractal *fractal)
-// {
-// 	int		i;
+int	iteratingMandelbrot(t_complex new, t_complex c)
+{
+	t_complex	old;
+	int			i;
 
-// 	i = 0;
-// 	fractal->values.new.real = 0;
-// 	fractal->values.new.im = 0;
-// 	while (i < MAX_ITERATIONS)
-// 	{
-// 		fractal->values.old.real = fractal->values.new.real;
-// 		fractal->values.old.im = fractal->values.new.im;
-// 		fractal->values.new.real = fractal->values.old.real * fractal->values.old.real
-// 			- fractal->values.old.im * fractal->values.old.im + fractal->values.c.real;
-// 		fractal->values.new.im = 2 * fractal->values.old.real * fractal->values.old.im + fractal->values.c.im;
-// 		if ((fractal->values.new.real * fractal->values.new.real
-// 			+ fractal->values.new.im * fractal->values.new.im) > 4)
-// 			break;
-// 		i++;
-// 	}
-// 	return (i);
-// }
+	i = 0;
+	while (i < MAX_ITERATIONS)
+	{
+		old.real = new.real;
+		old.im = new.im;
+		new.real = (old.real * old.real) - (old.im * old.im) + c.real;
+		new.im = 2 * old.real * old.im + c.im;
+		if ((new.real * new.real) + (new.im * new.im) > 4)
+			break;
+		i++;
+	}
+	return (i);
+}
 
-// void		mandelbrot(void *mlx_core, t_fractal *fractal)
-// {
-// 	int		i;=
+void	calculateMandelbrot(t_image_data *data, t_area area,
+	int (*f)(t_complex, t_complex))
+{
+	t_vector	vec;
+	t_complex	new;
+	int			i;
 
-// 	fractal->values.vec.x = 0;
-// 	while (fractal->values.vec.x < WIDTH_WINDOW)
-// 	{
-// 		fractal->values.vec.y = 0;
-// 		while (fractal->values.vec.y < HEIGHT_WINDOW)
-// 		{
-// 			fractal->values.c.real = 1.5 * (fractal->values.vec.x - WIDTH_WINDOW / 2)
-// 				/ (0.5 * fractal->values.zoom * WIDTH_WINDOW) + 0;
-// 			fractal->values.c.im = (fractal->values.vec.y - HEIGHT_WINDOW / 2)
-// 				/ (0.5 * fractal->values.zoom * HEIGHT_WINDOW) + 0;
-// 			i = iteratingMandelbrot(fractal);
-// 			// pixelSet(fractal, 0x010101 * i);
-// 			fractal->values.vec.y++;
-// 		}
-// 		fractal->values.vec.x++;
-// 	}
-// 	mlx_put_image_to_window(mlx_core, fractal->mlx_window,
-// 		fractal->mlx_image, 0, 0);
-// 	fractal->print = 0;
-// }
+	vec.x = area.start.x;
+	while (vec.x < area.end.x)
+	{
+		vec.y = area.start.y;
+		while (vec.y < area.end.y)
+		{
+			new.real = 0;
+			new.im = 0;
+			data->c.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
+				/ (0.5 * data->zoom * WIDTH_WINDOW) + ((float)data->pos.x / 10000);
+			data->c.im = (vec.y - HEIGHT_WINDOW / 2)
+				/ (0.5 * data->zoom * HEIGHT_WINDOW) + ((float)data->pos.y / 10000);
+			i = f(new, data->c);
+			pixelSetThread(data, vec, 0x010101 * i);
+			vec.y++;
+		}
+		vec.x++;
+	}
+}
+
+void		mandelbrot(t_fractal *fractal)
+{
+	pthread_t	pt[NB_THREADS];
+	void		*data[NB_THREADS][4];
+	void		*ret;
+	int			id[NB_THREADS];
+	int			i;
+
+	fractal->image_data.addr_image =
+		mlx_get_data_addr(fractal->mlx_image, &fractal->image_data.bpp,
+			&fractal->image_data.size_line, &fractal->image_data.endian);
+	i = -1;
+	while (++i < NB_THREADS)
+	{
+		data[i][0] = &fractal->image_data;
+		id[i] = i;
+		data[i][1] = &id[i];
+		data[i][2] = calculateMandelbrot;
+		data[i][3] = iteratingMandelbrot;
+		if ((pthread_create(&pt[i], NULL, threadFunction, data[i])) != 0)
+			exit(-1);
+	}
+	i = -1;
+	while (++i < NB_THREADS)
+	{
+		if (pthread_join(pt[i], &ret) != 0)
+			exit(-1);
+	}
+}

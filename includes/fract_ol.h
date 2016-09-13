@@ -13,8 +13,8 @@
 #ifndef FRACT_OL_H
 # define FRACT_OL_H
 
-# define WIDTH_WINDOW 840
-# define HEIGHT_WINDOW 620
+# define WIDTH_WINDOW 480
+# define HEIGHT_WINDOW 320
 # define TITLE "FRACT_OLOLOL"
 
 # define DEFAULT_REAL -0.7
@@ -32,8 +32,8 @@
 # define RESET 117
 # define SHIFT 257
 
-# define MAX_ITERATIONS 1000
-# define NB_THREADS 32
+# define MAX_ITERATIONS 10000
+# define NB_THREADS 16
 
 #include <mlx.h>
 
@@ -55,8 +55,8 @@ enum {
 
 typedef struct		s_complex
 {
-	float			real;
-	float			im;
+	double			real;
+	double			im;
 }					t_complex;
 
 typedef struct		s_vector
@@ -77,7 +77,7 @@ typedef	struct		s_image_data
 	int				size_line;
 	int				endian;
 	int				bpp;
-	float			zoom;
+	double			zoom;
 	t_vector		pos;
 	t_complex		c;
 
@@ -117,14 +117,17 @@ int		argsValid(t_var *vars, int ac, char **av);
 
 int		getIndexFocus(int *tab, int len, int focus);
 
+void	*threadFunction(void *packed_data);
+
 void	julia(t_fractal *fractal);
 int		iteratingJulia(t_complex new, t_complex c);
-void	mandelbrot(void *mlx_core, t_fractal *fractal);
+
+void	mandelbrot(t_fractal *fractal);
+int		iteratingMandelbrot(t_complex new, t_complex c);
 
 void	pixelSetThread(t_image_data *data, t_vector vec, int color);
 void	calculate(t_image_data *data, t_area area,
 	int (*f)(t_complex, t_complex));
-void	*threadFunction(void *packed_data);
 
 void	strLower(char *str);
 

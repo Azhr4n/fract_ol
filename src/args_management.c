@@ -42,7 +42,7 @@ void		setVars(t_var *vars)
 	vars->args[0] = ft_strdup("julia");
 	vars->args[1] = ft_strdup("mandelbrot");
 	vars->function_pointers[JULIA] = julia;
-	//vars->function_pointers[MANDELBROT] = mandelbrot;
+	vars->function_pointers[MANDELBROT] = mandelbrot;
 	vars->mlx_core = mlx_init();
 	vars->nb_windows = 0;
 	vars->dir.x = 0;

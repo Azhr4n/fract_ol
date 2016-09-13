@@ -14,12 +14,6 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#include <stdio.h>
-
-#include "fract_ol.h"
-
-#include <libft.h>
-
 #include "fract_ol.h"
 
 int	iteratingJulia(t_complex new, t_complex c)
@@ -69,7 +63,7 @@ void	calculateJulia(t_image_data *data, t_area area,
 void		julia(t_fractal *fractal)
 {
 	pthread_t	pt[NB_THREADS];
-	void		*data[NB_THREADS][3];
+	void		*data[NB_THREADS][4];
 	void		*ret;
 	int			id[NB_THREADS];
 	int			i;
@@ -84,6 +78,7 @@ void		julia(t_fractal *fractal)
 		id[i] = i;
 		data[i][1] = &id[i];
 		data[i][2] = calculateJulia;
+		data[i][3] = iteratingJulia;
 		if ((pthread_create(&pt[i], NULL, threadFunction, data[i])) != 0)
 			exit(-1);
 	}

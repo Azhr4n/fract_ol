@@ -22,47 +22,75 @@
 
 #include "fract_ol.h"
 
-static int	iteratingJulia(t_fractal *fractal)
+int	iteratingJulia(t_complex new, t_complex c)
 {
-	int		i;
+	t_complex	old;
+	int			i;
 
 	i = 0;
 	while (i < MAX_ITERATIONS)
 	{
-		fractal->values.old.real = fractal->values.new.real;
-		fractal->values.old.im = fractal->values.new.im;
-		fractal->values.new.real = fractal->values.old.real * fractal->values.old.real
-			- fractal->values.old.im * fractal->values.old.im + fractal->values.c.real;
-		fractal->values.new.im = 2 * fractal->values.old.real * fractal->values.old.im + fractal->values.c.im;
-		if ((fractal->values.new.real * fractal->values.new.real
-			+ fractal->values.new.im * fractal->values.new.im) > 4)
+		old.real = new.real;
+		old.im = new.im;
+		new.real = (old.real * old.real) - (old.im * old.im) + c.real;
+		new.im = 2 * old.real * old.im + c.im;
+		if ((new.real * new.real) + (new.im * new.im) > 4)
 			break;
 		i++;
 	}
 	return (i);
 }
 
-void		julia(void *mlx_core, t_fractal *fractal)
+void	calculateJulia(t_image_data *data, t_area area,
+	int (*f)(t_complex, t_complex))
 {
-	int		i;
+	t_vector	vec;
+	t_complex	new;
+	int			i;
 
-	fractal->values.vec.x = 0;
-	while (fractal->values.vec.x < WIDTH_WINDOW)
+	vec.x = area.start.x;
+	while (vec.x < area.end.x)
 	{
-		fractal->values.vec.y = 0;
-		while (fractal->values.vec.y < HEIGHT_WINDOW)
+		vec.y = area.start.y;
+		while (vec.y < area.end.y)
 		{
-			fractal->values.new.real = 1.5 * (fractal->values.vec.x - WIDTH_WINDOW / 2)
-				/ (0.5 * fractal->values.zoom * WIDTH_WINDOW) + 0;
-			fractal->values.new.im = (fractal->values.vec.y - HEIGHT_WINDOW / 2)
-				/ (0.5 * fractal->values.zoom * HEIGHT_WINDOW) + 0;
-			i = iteratingJulia(fractal);
-			pixelSet(mlx_core, fractal, 0x010101 * i);
-			fractal->values.vec.y++;
+			new.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
+				/ (0.5 * data->zoom * WIDTH_WINDOW) + ((float)data->pos.x / 10000);
+			new.im = (vec.y - HEIGHT_WINDOW / 2)
+				/ (0.5 * data->zoom * HEIGHT_WINDOW) + ((float)data->pos.y / 10000);
+			i = f(new, data->c);
+			pixelSetThread(data, vec, 0x010101 * i);
+			vec.y++;
 		}
-		fractal->values.vec.x++;
+		vec.x++;
 	}
-	mlx_put_image_to_window(mlx_core, fractal->mlx_window,
-		fractal->mlx_image, 0, 0);
-	fractal->print = 0;
+}
+
+void		julia(t_fractal *fractal)
+{
+	pthread_t	pt[NB_THREADS];
+	void		*data[NB_THREADS][3];
+	void		*ret;
+	int			id[NB_THREADS];
+	int			i;
+
+	fractal->image_data.addr_image =
+		mlx_get_data_addr(fractal->mlx_image, &fractal->image_data.bpp,
+			&fractal->image_data.size_line, &fractal->image_data.endian);
+	i = -1;
+	while (++i < NB_THREADS)
+	{
+		data[i][0] = &fractal->image_data;
+		id[i] = i;
+		data[i][1] = &id[i];
+		data[i][2] = calculateJulia;
+		if ((pthread_create(&pt[i], NULL, threadFunction, data[i])) != 0)
+			exit(-1);
+	}
+	i = -1;
+	while (++i < NB_THREADS)
+	{
+		if (pthread_join(pt[i], &ret) != 0)
+			exit(-1);
+	}
 }

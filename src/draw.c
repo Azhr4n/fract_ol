@@ -14,15 +14,13 @@
 
 #include "fract_ol.h"
 
-void	pixelSet(void *mlx_core, t_fractal *fractal, int color)
+//Test
+void	pixelSetThread(t_image_data *data, t_vector vec, int color)
 {
-	unsigned int	mlx_color;
-
-	mlx_color = mlx_get_color_value(mlx_core, color);
-	fractal->addr_image[(fractal->values.vec.x * fractal->bpp / 8) 
-		+ fractal->values.vec.y * fractal->size_line] = (color & 0xFF0000) >> 16;
-	fractal->addr_image[(fractal->values.vec.x * fractal->bpp / 8) 
-		+ fractal->values.vec.y * fractal->size_line + 1] = (color & 0xFF00) >> 8;
-	fractal->addr_image[(fractal->values.vec.x * fractal->bpp / 8) 
-		+ fractal->values.vec.y * fractal->size_line + 2] = (color & 0xFF) >> 0;
+	data->addr_image[(vec.x * data->bpp / 8)
+		+ vec .y * data->size_line] = (color & 0xFF0000) >> 16;
+	data->addr_image[(vec.x * data->bpp / 8)
+		+ vec .y * data->size_line + 1] = (color & 0xFF00) >> 8;
+	data->addr_image[(vec.x * data->bpp / 8)
+		+ vec .y * data->size_line + 2] = (color & 0xFF) >> 0;
 }

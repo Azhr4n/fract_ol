@@ -42,11 +42,13 @@ void		setVars(t_var *vars)
 	vars->args[0] = ft_strdup("julia");
 	vars->args[1] = ft_strdup("mandelbrot");
 	vars->function_pointers[JULIA] = julia;
-	vars->function_pointers[MANDELBROT] = mandelbrot;
+	//vars->function_pointers[MANDELBROT] = mandelbrot;
 	vars->mlx_core = mlx_init();
 	vars->nb_windows = 0;
 	vars->dir.x = 0;
 	vars->dir.y = 0;
+	vars->mouse_pos.x = 0;
+	vars->mouse_pos.y = 0;
 	vars->fract_set = 0;
 }
 
@@ -81,12 +83,9 @@ static void	allocateVars(t_var *vars, int index, int type)
 		WIDTH_WINDOW, HEIGHT_WINDOW, vars->args[type]);
 	vars->fractals[index].mlx_image = mlx_new_image(vars->mlx_core,
 		WIDTH_WINDOW, HEIGHT_WINDOW);
-	vars->fractals[index].addr_image = 
-		mlx_get_data_addr(vars->fractals[index].mlx_image,
-			&vars->fractals[index].bpp,	&vars->fractals[index].size_line,
-			&vars->fractals[index].endian);
 	vars->fract_set = 1;
-	vars->fractals[index].print = 1;
+	vars->real_const_val = 0.001;
+	vars->im_const_val = 0.00001;
 }
 
 static void	presetStruct(t_var *vars, int ac, char **av)

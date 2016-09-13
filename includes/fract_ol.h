@@ -19,17 +19,21 @@
 
 # define DEFAULT_REAL -0.7
 # define DEFAULT_IM 0.27015
+# define DEFAULT_REAL_ADD 0.0001
+# define DEFAULT_IM_ADD 0.0001
 
 # define ESC_KEYCODE 53
 # define UP 126
 # define DOWN 125
 # define LEFT 123
 # define RIGHT 124
+# define MINUS 78
+# define PLUS 69
+# define RESET 117
+# define SHIFT 257
 
-# define MAX_ITERATIONS 300
-# define NB_THREADS 2
-
-# define V_VALUES vars->fractals[index].values
+# define MAX_ITERATIONS 1000
+# define NB_THREADS 32
 
 #include <mlx.h>
 
@@ -67,30 +71,28 @@ typedef struct		s_area
 	t_vector		end;
 }					t_area;
 
-typedef struct		s_values
+typedef	struct		s_image_data
 {
-	t_complex		c;
-	t_complex		old;
-	t_complex		new;
-	t_vector		pos;
-	t_vector		vec;
-	float			zoom;
-}					t_values;
-
-typedef struct		s_fractal
-{
-	int				type;
-	void			*mlx_window;
-	void			*mlx_image;
 	char			*addr_image;
 	int				size_line;
 	int				endian;
 	int				bpp;
+	float			zoom;
+	t_vector		pos;
+	t_complex		c;
+
+}					t_image_data;
+
+typedef struct		s_fractal
+{
+	void			*mlx_window;
+	void			*mlx_image;
+	t_image_data	image_data;
+	int				type;
 	int				print;
-	t_values		values;
 }					t_fractal;
 
-typedef void (*t_fp) (void *, t_fractal *);
+typedef void (*t_fp) (t_fractal *);
 
 typedef struct		s_var
 {
@@ -100,6 +102,10 @@ typedef struct		s_var
 	void			*mlx_core;
 	t_fractal		*fractals;
 	t_vector		dir;
+	int				shift;
+	float			real_const_val;
+	float			im_const_val;
+	t_vector		mouse_pos;
 	int				fract_set;
 }					t_var;
 
@@ -111,10 +117,14 @@ int		argsValid(t_var *vars, int ac, char **av);
 
 int		getIndexFocus(int *tab, int len, int focus);
 
-void	julia(void *mlx_core, t_fractal *fractal);
+void	julia(t_fractal *fractal);
+int		iteratingJulia(t_complex new, t_complex c);
 void	mandelbrot(void *mlx_core, t_fractal *fractal);
 
-void	pixelSet(void *mlx_core, t_fractal *fractal, int color);
+void	pixelSetThread(t_image_data *data, t_vector vec, int color);
+void	calculate(t_image_data *data, t_area area,
+	int (*f)(t_complex, t_complex));
+void	*threadFunction(void *packed_data);
 
 void	strLower(char *str);
 

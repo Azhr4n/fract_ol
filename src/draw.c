@@ -17,10 +17,10 @@
 //Test
 void	pixelSetThread(t_image_data *data, t_vector vec, int color)
 {
-	data->addr_image[(vec.x * data->bpp / 8)
-		+ vec .y * data->size_line] = (color & 0xFF0000) >> 16;
-	data->addr_image[(vec.x * data->bpp / 8)
-		+ vec .y * data->size_line + 1] = (color & 0xFF00) >> 8;
-	data->addr_image[(vec.x * data->bpp / 8)
-		+ vec .y * data->size_line + 2] = (color & 0xFF) >> 0;
+	data->addr_image[((int)vec.x * data->bpp / 8)
+		+ (int)vec.y * data->size_line] = (color & 0xFF0000) >> 16;
+	data->addr_image[((int)vec.x * data->bpp / 8)
+		+ (int)vec.y * data->size_line + 1] = (color & 0xFF00) >> 8;
+	data->addr_image[((int)vec.x * data->bpp / 8)
+		+ (int)vec.y * data->size_line + 2] = (color & 0xFF) >> 0;
 }

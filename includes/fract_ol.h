@@ -13,8 +13,8 @@
 #ifndef FRACT_OL_H
 # define FRACT_OL_H
 
-# define WIDTH_WINDOW 480
-# define HEIGHT_WINDOW 320
+# define WIDTH_WINDOW 640
+# define HEIGHT_WINDOW 480
 # define TITLE "FRACT_OLOLOL"
 
 # define DEFAULT_REAL -0.7
@@ -61,8 +61,8 @@ typedef struct		s_complex
 
 typedef struct		s_vector
 {
-	int				x;
-	int				y;
+	float			x;
+	float			y;
 }					t_vector;
 
 typedef struct		s_area

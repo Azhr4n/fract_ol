@@ -43,9 +43,11 @@ void		setConstant(t_var *vars, int type, float value)
 		if (vars->fractals[i].type == JULIA)
 		{
 			if (type == REAL)
-				vars->fractals[i].image_data.c.real += value;
+				vars->fractals[i].image_data.c.real += value 
+					/ vars->fractals[i].image_data.zoom;
 			else if (type == IM)
-				vars->fractals[i].image_data.c.im += value;
+				vars->fractals[i].image_data.c.im += value
+					/ vars->fractals[i].image_data.zoom;
 			if (type == REAL || type == IM)
 				vars->fractals[i].print = 1;
 		}
@@ -161,14 +163,17 @@ static int myButtonHook(int button, int x, int y, void *param)
 {
 	t_var	*vars;
 
-	(void)y;
 	vars = (t_var *)param;
 	if (button == 4)
 	{
-		vars->fractals[0].image_data.pos.x += x - WIDTH_WINDOW / 2;
-		vars->fractals[0].image_data.pos.y += y - HEIGHT_WINDOW / 2;
+		vars->fractals[0].image_data.pos.x += (x - WIDTH_WINDOW / 2)
+			/ vars->fractals[0].image_data.zoom;
+		vars->fractals[0].image_data.pos.y += (y - HEIGHT_WINDOW / 2)
+			/ vars->fractals[0].image_data.zoom;
 		setZoom(vars, MUL, 1.01);
 	}
+	else if (button == 6)
+		setZoom(vars, MUL, 1.01);
 	else if (button == 5)
 		setZoom(vars, DIV, 1.01);
 	return (1);

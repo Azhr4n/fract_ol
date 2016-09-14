@@ -14,6 +14,8 @@
 
 #include "fract_ol.h"
 
+#include <stdio.h>
+
 //Test
 void	pixelSetThread(t_image_data *data, t_vector vec, int color)
 {

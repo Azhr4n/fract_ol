@@ -14,6 +14,8 @@
 
 #include "fract_ol.h"
 
+#include <stdio.h>
+
 static void	threadFunctionNext(void **data, t_image_data *image_data,
 	t_area area)
 {
@@ -35,10 +37,10 @@ void		*threadFunction(void *packed_data)
 	data = packed_data;
 	image_data = data[0];
 	id = data[1];
-	area.start.x = *id % (NB_THREADS / 2) * (WIDTH_WINDOW / (NB_THREADS / 2));
-	area.start.y = *id / (NB_THREADS / 2) * (HEIGHT_WINDOW / 2);
-	area.end.x = area.start.x + (WIDTH_WINDOW / (NB_THREADS / 2));
-	area.end.y = area.start.y + (HEIGHT_WINDOW / 2);
+	area.start.x = *id * (WIDTH_WINDOW / NB_THREADS);
+	area.start.y = 0;
+	area.end.x = area.start.x + (WIDTH_WINDOW / NB_THREADS);
+	area.end.y = HEIGHT_WINDOW;
 	threadFunctionNext(data, image_data, area);
 	return (NULL);
 }

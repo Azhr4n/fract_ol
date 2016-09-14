@@ -41,6 +41,7 @@ void	calculateJulia(t_image_data *data, t_area area,
 	t_vector	vec;
 	t_complex	new;
 	int			i;
+	int			color;
 
 	vec.x = area.start.x;
 	while (vec.x < area.end.x)
@@ -49,11 +50,13 @@ void	calculateJulia(t_image_data *data, t_area area,
 		while (vec.y < area.end.y)
 		{
 			new.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
-				/ (0.5 * data->zoom * WIDTH_WINDOW) + ((float)data->pos.x / 10000);
+				/ (0.5 * data->zoom * WIDTH_WINDOW) + data->pos.x;
 			new.im = (vec.y - HEIGHT_WINDOW / 2)
-				/ (0.5 * data->zoom * HEIGHT_WINDOW) + ((float)data->pos.y / 10000);
+				/ (0.5 * data->zoom * HEIGHT_WINDOW) + data->pos.y;
 			i = f(new, data->c);
-			pixelSetThread(data, vec, 0x010101 * (i % 0xFFFFFF));
+			color = (0x010000 * (i % 0xFF)) +
+				(0x000100 * (i % 0xFF)) + (0x000001 * (i % 0xFF));
+			pixelSetThread(data, vec, color);
 			vec.y++;
 		}
 		vec.x++;

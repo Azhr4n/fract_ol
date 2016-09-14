@@ -27,6 +27,8 @@ void		setFractalValues(t_var *vars)
 		vars->fractals[i].image_data.c.im = DEFAULT_IM;
 		vars->fractals[i].image_data.zoom = 1;
 		vars->fractals[i].image_data.pos.x = 0;
+		if (vars->fractals[i].type == MANDELBROT)
+			vars->fractals[i].image_data.pos.x = -0.5;
 		vars->fractals[i].image_data.pos.y = 0;
 		vars->fractals[i].print = 1;
 		i++;
@@ -166,10 +168,10 @@ static int	myButtonHook(int button, int x, int y, void *param)
 		vars->focus = *id;
 	if (button == 4)
 	{
-		vars->fractals[*id].image_data.pos.x += (x - WIDTH_WINDOW / 2)
-			/ vars->fractals[*id].image_data.zoom;
-		vars->fractals[*id].image_data.pos.y += (y - HEIGHT_WINDOW / 2)
-			/ vars->fractals[*id].image_data.zoom;
+		vars->fractals[*id].image_data.pos.x += ((x - WIDTH_WINDOW / 2)
+			/ vars->fractals[*id].image_data.zoom) / 10000;
+		vars->fractals[*id].image_data.pos.y += ((y - HEIGHT_WINDOW / 2)
+			/ vars->fractals[*id].image_data.zoom) / 10000;
 		setZoom(vars, MUL, 1.01, *id);
 	}
 	else if (button == 6)

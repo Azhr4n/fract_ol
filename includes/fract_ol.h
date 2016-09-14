@@ -13,8 +13,8 @@
 #ifndef FRACT_OL_H
 # define FRACT_OL_H
 
-# define WIDTH_WINDOW 1980
-# define HEIGHT_WINDOW 1200
+# define WIDTH_WINDOW 480
+# define HEIGHT_WINDOW 320
 # define TITLE "FRACT_OLOLOL"
 
 # define DEFAULT_REAL -0.7
@@ -32,8 +32,8 @@
 # define RESET 117
 # define SHIFT 257
 
-# define MAX_ITERATIONS 1000
-# define NB_THREADS 32
+# define MAX_ITERATIONS 2048
+# define NB_THREADS 16
 
 #include <mlx.h>
 
@@ -62,8 +62,8 @@ typedef struct		s_complex
 
 typedef struct		s_vector
 {
-	float			x;
-	float			y;
+	double			x;
+	double			y;
 }					t_vector;
 
 typedef struct		s_area

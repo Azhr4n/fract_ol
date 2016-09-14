@@ -15,6 +15,8 @@
 
 #include "fract_ol.h"
 
+#include <stdio.h>
+
 void	strLower(char *str)
 {
 	while (*str != 0)

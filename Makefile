@@ -21,6 +21,7 @@ SRC =	src/main.c				\
 		src/julia.c				\
 		src/threads.c			\
 		src/mandelbrot.c		\
+		src/buddhabrot.c		\
 		src/args_management.c
 
 OBJ = $(SRC:.c=.o)

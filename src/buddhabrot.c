@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   julia.c                                            :+:      :+:    :+:   */
+/*   buddhabrot.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pivanovi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/07 16:52:23 by pivanovi          #+#    #+#             */
-/*   Updated: 2016/09/07 16:52:23 by pivanovi         ###   ########.fr       */
+/*   Created: 2016/09/14 12:09:20 by pivanovi          #+#    #+#             */
+/*   Updated: 2016/09/14 12:09:20 by pivanovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include <libft.h>
 #include <stdlib.h>
 #include <pthread.h>
 
 #include "fract_ol.h"
 
-int	iteratingJulia(t_complex new, t_complex c)
+#include <stdio.h>
+
+int	iteratingBuddhabrot(t_complex new, t_complex c)
 {
 	t_complex	old;
 	int			i;
@@ -35,7 +36,7 @@ int	iteratingJulia(t_complex new, t_complex c)
 	return (i);
 }
 
-void	calculateJulia(t_image_data *data, t_area area,
+void	calculateBuddhabrot(t_image_data *data, t_area area,
 	int (*f)(t_complex, t_complex))
 {
 	t_vector	vec;
@@ -48,19 +49,22 @@ void	calculateJulia(t_image_data *data, t_area area,
 		vec.y = area.start.y;
 		while (vec.y < area.end.y)
 		{
-			new.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
+			new.real = 0;
+			new.im = 0;
+			data->c.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
 				/ (0.5 * data->zoom * WIDTH_WINDOW) + ((float)data->pos.x / 10000);
-			new.im = (vec.y - HEIGHT_WINDOW / 2)
+			data->c.im = (vec.y - HEIGHT_WINDOW / 2)
 				/ (0.5 * data->zoom * HEIGHT_WINDOW) + ((float)data->pos.y / 10000);
+
 			i = f(new, data->c);
-			pixelSetThread(data, vec, 0x010101 * (i % 0xFFFFFF));
+			pixelSetThread(data, vec, 0x010101 * i);
 			vec.y++;
 		}
 		vec.x++;
 	}
 }
 
-void		julia(t_fractal *fractal)
+void		buddhabrot(t_fractal *fractal)
 {
 	pthread_t	pt[NB_THREADS];
 	void		*data[NB_THREADS][4];
@@ -77,8 +81,8 @@ void		julia(t_fractal *fractal)
 		data[i][0] = &fractal->image_data;
 		id[i] = i;
 		data[i][1] = &id[i];
-		data[i][2] = calculateJulia;
-		data[i][3] = iteratingJulia;
+		data[i][2] = calculateBuddhabrot;
+		data[i][3] = iteratingBuddhabrot;
 		if ((pthread_create(&pt[i], NULL, threadFunction, data[i])) != 0)
 			exit(-1);
 	}
@@ -89,3 +93,4 @@ void		julia(t_fractal *fractal)
 			exit(-1);
 	}
 }
+

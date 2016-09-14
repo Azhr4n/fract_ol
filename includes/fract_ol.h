@@ -13,8 +13,8 @@
 #ifndef FRACT_OL_H
 # define FRACT_OL_H
 
-# define WIDTH_WINDOW 640
-# define HEIGHT_WINDOW 480
+# define WIDTH_WINDOW 1980
+# define HEIGHT_WINDOW 1200
 # define TITLE "FRACT_OLOLOL"
 
 # define DEFAULT_REAL -0.7
@@ -32,14 +32,15 @@
 # define RESET 117
 # define SHIFT 257
 
-# define MAX_ITERATIONS 10000
-# define NB_THREADS 16
+# define MAX_ITERATIONS 1000
+# define NB_THREADS 32
 
 #include <mlx.h>
 
 enum {
 	JULIA,
 	MANDELBROT,
+	BUDDHABROT,
 	NB_ARGS
 };
 
@@ -100,6 +101,7 @@ typedef struct		s_var
 	char			**args;
 	int				nb_windows;
 	void			*mlx_core;
+	int				focus;
 	t_fractal		*fractals;
 	t_vector		dir;
 	int				shift;
@@ -121,9 +123,18 @@ void	*threadFunction(void *packed_data);
 
 void	julia(t_fractal *fractal);
 int		iteratingJulia(t_complex new, t_complex c);
+void	calculateJulia(t_image_data *data, t_area area,
+	int (*f)(t_complex, t_complex));
 
 void	mandelbrot(t_fractal *fractal);
 int		iteratingMandelbrot(t_complex new, t_complex c);
+void	calculateMandelbrot(t_image_data *data, t_area area,
+	int (*f)(t_complex, t_complex));
+
+void	buddhabrot(t_fractal *fractal);
+int	iteratingBuddhabrot(t_complex new, t_complex c);
+void	calculateBuddhabrot(t_image_data *data, t_area area,
+	int (*f)(t_complex, t_complex));
 
 void	pixelSetThread(t_image_data *data, t_vector vec, int color);
 void	calculate(t_image_data *data, t_area area,

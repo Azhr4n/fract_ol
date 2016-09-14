@@ -40,7 +40,7 @@ void		setConstant(t_var *vars, int type, float value)
 	i = 0;
 	while (i < vars->nb_windows)
 	{
-		if (vars->fractals[i].type == JULIA)
+		if (vars->fractals[i].type == JULIA && i == vars->focus)
 		{
 			if (type == REAL)
 				vars->fractals[i].image_data.c.real += value 
@@ -55,21 +55,14 @@ void		setConstant(t_var *vars, int type, float value)
 	}
 }
 
-void		setZoom(t_var *vars, int type, float value)
+void		setZoom(t_var *vars, int type, float value, int id)
 {
-	int		i;
-
-	i = 0;
-	while (i < vars->nb_windows)
-	{
-		if (type == MUL)
-			vars->fractals[i].image_data.zoom *= value;
-		else if (type == DIV)
-			vars->fractals[i].image_data.zoom /= value;
-		if (type == MUL || type == DIV)
-			vars->fractals[i].print = 1;
-		i++;
-	}
+	if (type == MUL)
+		vars->fractals[id].image_data.zoom *= value;
+	else if (type == DIV)
+		vars->fractals[id].image_data.zoom /= value;
+	if (type == MUL || type == DIV)
+		vars->fractals[id].print = 1;
 }
 
 static int	myMouseHook(int x, int y, void *param)
@@ -159,23 +152,30 @@ static int myKeyReleased(int keycode, void *param)
 	return (0);
 }
 
-static int myButtonHook(int button, int x, int y, void *param)
+static int	myButtonHook(int button, int x, int y, void *param)
 {
+	void	**tab;
 	t_var	*vars;
+	int		*id;
 
-	vars = (t_var *)param;
+	tab = param;
+	vars = tab[0];
+	id = tab[1];
+
+	if (button == 1)
+		vars->focus = *id;
 	if (button == 4)
 	{
-		vars->fractals[0].image_data.pos.x += (x - WIDTH_WINDOW / 2)
-			/ vars->fractals[0].image_data.zoom;
-		vars->fractals[0].image_data.pos.y += (y - HEIGHT_WINDOW / 2)
-			/ vars->fractals[0].image_data.zoom;
-		setZoom(vars, MUL, 1.01);
+		vars->fractals[*id].image_data.pos.x += (x - WIDTH_WINDOW / 2)
+			/ vars->fractals[*id].image_data.zoom;
+		vars->fractals[*id].image_data.pos.y += (y - HEIGHT_WINDOW / 2)
+			/ vars->fractals[*id].image_data.zoom;
+		setZoom(vars, MUL, 1.01, *id);
 	}
 	else if (button == 6)
-		setZoom(vars, MUL, 1.01);
+		setZoom(vars, MUL, 1.01, *id);
 	else if (button == 5)
-		setZoom(vars, DIV, 1.01);
+		setZoom(vars, DIV, 1.01, *id);
 	return (1);
 }
 
@@ -205,12 +205,18 @@ static int	refresh(void *param)
 void		main_loop(t_var *vars)
 {
 	int		i;
+	int		id[2];
+	void	*tab[2][2];
 
 	setFractalValues(vars);
+	vars->focus = vars->nb_windows;
 	i = 0;
 	while (i < vars->nb_windows)
 	{
-		mlx_mouse_hook(vars->fractals[i].mlx_window, myButtonHook, vars);
+		tab[i][0] = vars;
+		id[i] = i;
+		tab[i][1] = &id[i];
+		mlx_mouse_hook(vars->fractals[i].mlx_window, myButtonHook, tab[i]);
 		mlx_hook(vars->fractals[i].mlx_window, 6, (1L<<6), myMouseHook, vars);
 		mlx_hook(vars->fractals[i].mlx_window, 2, (1L<<0), myKeyPressed, vars);
 		mlx_hook(vars->fractals[i].mlx_window, 3,

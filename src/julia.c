@@ -54,8 +54,8 @@ void	calculateJulia(t_image_data *data, t_area area,
 			new.im = (vec.y - HEIGHT_WINDOW / 2)
 				/ (0.5 * data->zoom * HEIGHT_WINDOW) + data->pos.y;
 			i = f(new, data->c);
-			color = (0x010000 * (i % 0xFF)) +
-				(0x000100 * (i % 0xFF)) + (0x000001 * (i % 0xFF));
+			color = (0x010000 * (i)) +
+			 	(0x000100 * (i * 10)) + (0x000001 * (i * 10));
 			pixelSetThread(data, vec, color);
 			vec.y++;
 		}

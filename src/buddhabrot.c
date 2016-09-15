@@ -19,16 +19,15 @@
 
 int	iteratingBuddhabrot(t_complex new, t_complex c)
 {
-	t_complex	old;
+	float		tmp;
 	int			i;
 
 	i = 0;
 	while (i < MAX_ITERATIONS)
 	{
-		old.real = new.real;
-		old.im = new.im;
-		new.real = (old.real * old.real) - (old.im * old.im) + c.real;
-		new.im = 2 * old.real * old.im + c.im;
+		tmp = new.real;
+		new.real = (new.real * new.real) - (new.im * new.im) + c.real;
+		new.im = 2 * tmp * new.im + c.im;
 		if ((new.real * new.real) + (new.im * new.im) > 4)
 			break;
 		i++;
@@ -42,6 +41,7 @@ void	calculateBuddhabrot(t_image_data *data, t_area area,
 	t_vector	vec;
 	t_complex	new;
 	int			i;
+	int			color;
 
 	vec.x = area.start.x;
 	while (vec.x < area.end.x)
@@ -52,12 +52,18 @@ void	calculateBuddhabrot(t_image_data *data, t_area area,
 			new.real = 0;
 			new.im = 0;
 			data->c.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
-				/ (0.5 * data->zoom * WIDTH_WINDOW) + ((float)data->pos.x / 10000);
+				/ (0.5 * data->zoom * WIDTH_WINDOW) + data->pos.x;
 			data->c.im = (vec.y - HEIGHT_WINDOW / 2)
-				/ (0.5 * data->zoom * HEIGHT_WINDOW) + ((float)data->pos.y / 10000);
+				/ (0.5 * data->zoom * HEIGHT_WINDOW) + data->pos.y;
 
+			printf("%f\n", 1.5 * (vec.x) / (0.5 * 240) - data->c.real);
+
+			exit(1);
 			i = f(new, data->c);
-			pixelSetThread(data, vec, 0x010101 * i);
+			color = (0x010000 * (i)) +
+				(0x000100 * (i * 10)) + (0x000001 * (i * 10));
+
+			pixelSetThread(data, vec, color);
 			vec.y++;
 		}
 		vec.x++;
@@ -94,3 +100,5 @@ void		buddhabrot(t_fractal *fractal)
 	}
 }
 
+//c.real = 1.5 * (vec.x - 240) / (0.5 * 240)
+//1.5 * (vec.x - 240) / (0.5 * 240) - data->c.real = 0

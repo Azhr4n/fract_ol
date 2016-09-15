@@ -31,7 +31,7 @@ int		main(int ac, char **av)
 	t_var	vars;
 
 	setVars(&vars);
-	if (ac > 1 && ac <= 6)
+	if (ac > 1 && ac <= 4)
 	{
 		if (argsValid(&vars, ac, av) == 0)
 		{

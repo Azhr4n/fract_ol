@@ -163,7 +163,6 @@ static int	myButtonHook(int button, int x, int y, void *param)
 	tab = param;
 	vars = tab[0];
 	id = tab[1];
-
 	if (button == 1)
 		vars->focus = *id;
 	if (button == 4)
@@ -207,8 +206,8 @@ static int	refresh(void *param)
 void		main_loop(t_var *vars)
 {
 	int		i;
-	int		id[2];
-	void	*tab[2][2];
+	int		id[vars->nb_windows];
+	void	*tab[vars->nb_windows][2];
 
 	setFractalValues(vars);
 	vars->focus = vars->nb_windows;

@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
 int	iteratingMandelbrot(t_complex new, t_complex c)
 {
 	t_complex	old;
@@ -38,19 +40,20 @@ int	iteratingMandelbrot(t_complex new, t_complex c)
 	return (i);
 }
 
-void	calculateMandelbrot(t_image_data *data, t_area area,
-	int (*f)(t_complex, t_complex))
+void	calculateMandelbrot(t_image_data *data, t_area area, void *ptr)
 {
 	t_vector	vec;
 	t_complex	new;
 	int			i;
 	int			color;
+	int			(*f)(t_complex, t_complex);
 
-	vec.x = area.start.x;
-	while (vec.x < area.end.x)
+	f = ptr;
+	vec.x = area.start.x - 1;
+	while (++vec.x < area.end.x)
 	{
-		vec.y = area.start.y;
-		while (vec.y < area.end.y)
+		vec.y = area.start.y - 1;
+		while (++vec.y < area.end.y)
 		{
 			new.real = 0;
 			new.im = 0;
@@ -59,12 +62,12 @@ void	calculateMandelbrot(t_image_data *data, t_area area,
 			data->c.im = (vec.y - HEIGHT_WINDOW / 2)
 				/ (0.5 * data->zoom * HEIGHT_WINDOW) + data->pos.y;
 			i = f(new, data->c);
-			color = (0x010000 * (i)) +
-			 	(0x000100 * (i * 10)) + (0x000001 * (i * 100));
+			color = (0x010000 * (i * 4)) +
+				(0x000100 * (i * 10)) + (0x000001 * (i * 100));
+			if (i == MAX_ITERATIONS)
+				color = 0x000000;
 			pixelSetThread(data, vec, color);
-			vec.y++;
 		}
-		vec.x++;
 	}
 }
 
@@ -77,8 +80,7 @@ void		mandelbrot(t_fractal *fractal)
 	int			i;
 
 	fractal->image_data.addr_image =
-		mlx_get_data_addr(fractal->mlx_image, &fractal->image_data.bpp,
-			&fractal->image_data.size_line, &fractal->image_data.endian);
+		mlx_get_data_addr(fractal->mlx_image, &BPP, &SL, &ED);
 	i = -1;
 	while (++i < NB_THREADS)
 	{

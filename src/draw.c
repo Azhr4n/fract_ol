@@ -19,8 +19,8 @@
 //Test
 void	pixelSetThread(t_image_data *data, t_vector vec, int color)
 {
-	if (color > 0xFFFFFF)
-		color = 0xFFFFFF;
+	// if (color > 0xFFFFFF)
+	// 	color = 0xFFFFFF;
 	data->addr_image[((int)vec.x * data->bpp / 8)
 		+ (int)vec.y * data->size_line] = (color & 0xFF0000) >> 16;
 	data->addr_image[((int)vec.x * data->bpp / 8)

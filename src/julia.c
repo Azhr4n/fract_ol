@@ -35,31 +35,32 @@ int	iteratingJulia(t_complex new, t_complex c)
 	return (i);
 }
 
-void	calculateJulia(t_image_data *data, t_area area,
-	int (*f)(t_complex, t_complex))
+void	calculateJulia(t_image_data *data, t_area area, void *ptr)
 {
 	t_vector	vec;
 	t_complex	new;
 	int			i;
 	int			color;
+	int			(*f)(t_complex, t_complex);
 
-	vec.x = area.start.x;
-	while (vec.x < area.end.x)
+	f = ptr;
+	vec.x = area.start.x - 1;
+	while (++vec.x < area.end.x)
 	{
-		vec.y = area.start.y;
-		while (vec.y < area.end.y)
+		vec.y = area.start.y - 1;
+		while (++vec.y < area.end.y)
 		{
 			new.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
 				/ (0.5 * data->zoom * WIDTH_WINDOW) + data->pos.x;
 			new.im = (vec.y - HEIGHT_WINDOW / 2)
 				/ (0.5 * data->zoom * HEIGHT_WINDOW) + data->pos.y;
 			i = f(new, data->c);
-			color = (0x010000 * (i)) +
-			 	(0x000100 * (i * 10)) + (0x000001 * (i * 10));
+			color = (0x010000 * (i * 4)) +
+				(0x000100 * (i * 2)) + (0x000001 * (i * 3));
+			if (i == MAX_ITERATIONS)
+				color = 0x000000;
 			pixelSetThread(data, vec, color);
-			vec.y++;
 		}
-		vec.x++;
 	}
 }
 

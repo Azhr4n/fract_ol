@@ -33,9 +33,13 @@
 # define SHIFT 257
 
 # define MAX_ITERATIONS 2048
-# define NB_THREADS 1
+# define NB_THREADS 16
 
 # define MIN(a, b) (((a) < (b)) ? (a) : (b))
+
+# define BPP fractal->image_data.bpp
+# define SL fractal->image_data.size_line
+# define ED fractal->image_data.endian
 
 #include <mlx.h>
 
@@ -125,18 +129,16 @@ void	*threadFunction(void *packed_data);
 
 void	julia(t_fractal *fractal);
 int		iteratingJulia(t_complex new, t_complex c);
-void	calculateJulia(t_image_data *data, t_area area,
-	int (*f)(t_complex, t_complex));
+void	calculateJulia(t_image_data *data, t_area area, void *ptr);
 
 void	mandelbrot(t_fractal *fractal);
 int		iteratingMandelbrot(t_complex new, t_complex c);
-void	calculateMandelbrot(t_image_data *data, t_area area,
-	int (*f)(t_complex, t_complex));
+void	calculateMandelbrot(t_image_data *data, t_area area, void *ptr);
 
 void	buddhabrot(t_fractal *fractal);
-int	iteratingBuddhabrot(t_complex new, t_complex c);
-void	calculateBuddhabrot(t_image_data *data, t_area area,
-	int (*f)(t_complex, t_complex));
+// int		iteratingBuddhabrot(t_complex new, t_complex c);
+// void	calculateBuddhabrot(t_image_data *data, t_area area,
+// 	int (*f)(t_complex, t_complex));
 
 void	pixelSetThread(t_image_data *data, t_vector vec, int color);
 void	calculate(t_image_data *data, t_area area,

@@ -74,6 +74,12 @@ typedef struct		s_area
 	t_vector		end;
 }					t_area;
 
+typedef struct		s_node
+{
+	t_vector		pos;
+	void			*next;
+}					t_node;
+
 typedef	struct		s_image_value
 {
 	double			zoom;

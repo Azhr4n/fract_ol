@@ -19,171 +19,114 @@
 
 #include <stdio.h>
 
-// int	iteratingBuddhabrot(t_complex new, t_complex c, t_image_data *data,
-// 	int ***tmp_tab)
-// {
-// 	float		tmp;
-// 	float		im_tmp;
-// 	int			i;
-// 	float		x;
-// 	float		y;
+t_node	*createNewNode(float x, float y)
+{
+	t_node	*ptr;
 
-// 	(void)data;
-// 	i = -1;
-// 	while (++i < MAX_ITERATIONS)
-// 	{
-// 		tmp = new.real;
-// 		new.real = (new.real * new.real) - (new.im * new.im) + c.real;
-// 		x = ((((new.real - (tmp * tmp)) + (new.im * new.im)) * (0.5 * WIDTH_WINDOW)) / 1.5) + (WIDTH_WINDOW / 2);
-// 		im_tmp = new.im;
-// 		new.im = 2 * tmp * new.im + c.im;
-// 		y = (new.im - (2 * tmp * im_tmp)) * (0.5 * HEIGHT_WINDOW) + (HEIGHT_WINDOW / 2);
-// 		if (roundf(x) == x && x >= 0 && x < WIDTH_WINDOW && roundf(y) == y && y >= 0 && y < HEIGHT_WINDOW)
-// 			(*tmp_tab)[(int)x][(int)y] += 1;
-// 		if ((new.real * new.real) + (new.im * new.im) > 4)
-// 			break;
-// 	}
-// 	return (i);
-// }
+	ptr = (t_node *)malloc(sizeof(t_node));
+	ptr->next = NULL;
+	ptr->pos.x = x;
+	ptr->pos.y = y;
+	return (ptr);
+}
 
-// int		**allocateDoubleTab(int width, int height)
-// {
-// 	int		**tab;
-// 	int		i;
-// 	int		j;
+void	insertNodeAtEnd(t_node *node, t_node *new)
+{
+	t_node	*ptr;
 
-// 	tab = (int **)malloc(sizeof(int *) * width);
-// 	i = -1;
-// 	while (++i < width)
-// 	{
-// 		tab[i] = (int *)malloc(sizeof(int) * height);
-// 		j = -1;
-// 		while (++j < height)
-// 			tab[i][j] = 0;
-// 	}
-// 	return (tab);
-// }
+	ptr = node;
+	while (ptr->next != NULL)
+		ptr = ptr->next;
+	ptr->next = new;
+}
 
-// void	intermediateBuddha(t_image_data *data, t_area area, void *ptr,
-// 	int ***pixel_intensity)
-// {
-// 	t_vector	vec;
-// 	t_complex	new;
-// 	int			i;
-// 	int			(*f)(t_complex, t_complex, t_image_data *, int ***);
-// 	int			**tmp_tab;
 
-// 	tmp_tab = allocateDoubleTab(WIDTH_WINDOW, HEIGHT_WINDOW);
-// 	f = ptr;
-// 	vec.x = area.start.x - 1;
-// 	while (++vec.x < area.end.x)
-// 	{
-// 		vec.y = area.start.y;
-// 		while (++vec.y < area.end.y)
-// 		{
-// 			new.real = 0;
-// 			new.im = 0;
-// 			data->c.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
-// 				/ (0.5 * data->zoom * WIDTH_WINDOW) + data->pos.x;
-// 			data->c.im = (vec.y - HEIGHT_WINDOW / 2)
-// 				/ (0.5 * data->zoom * HEIGHT_WINDOW) + data->pos.y;
-// 			i = f(new, data->c, data, &tmp_tab);
-// 			if (i != MAX_ITERATIONS)
-// 			{
-// 				for (int k = area.start.x; k < area.end.x; k++)
-// 				{
-// 					for (int j = area.start.y; j < area.end.y; j++)
-// 						(*pixel_intensity)[k][j] += tmp_tab[k][j];
-// 				}
-// 			}
-// 			for (int k = 0; k < WIDTH_WINDOW; k++)
-// 			{
-// 				for (int j = 0; j < HEIGHT_WINDOW; j++)
-// 					tmp_tab[k][j] = 0;
-// 			}
-// 		}
-// 	}
-// 	puts("Done");
-// 	//FREE(TMP_TAB);
-// }
+int	iteratingBuddhabrot(t_complex new, t_complex c, t_node *list)
+{
+	t_complex	old;
+	int			i;
 
-// void	calculateBuddhabrot(t_image_data *data, t_area area, void *ptr)
-// {
-// 	int			**pixel_intensity;
-// 	t_vector	vec;
-// 	int			color;
+	(void)list;
+	i = 0;
+	while (i < MAX_ITERATIONS)
+	{
+		old.real = new.real;
+		old.im = new.im;
+		new.real = (old.real * old.real) - (old.im * old.im) + c.real;
+		new.im = 2 * old.real * old.im + c.im;
+		if (new.real * new.real + new.im * new.im > 4)
+			break;
+		i++;
+	}
+	return (i);
+}
 
-// 	pixel_intensity = allocateDoubleTab(area.end.x - area.start.x, area.end.y - area.start.y);
-// 	intermediateBuddha(data, area, ptr, &pixel_intensity);
-// 	for (vec.x = area.start.x; vec.x < area.end.x; vec.x++)
-// 	{
-// 		for (vec.y = area.start.y; vec.y < area.end.y; vec.y++)
-// 		{
-// 			if (pixel_intensity[(int)vec.x][(int)vec.y] > 100)
-// 				printf("[%d] ", pixel_intensity[(int)vec.x][(int)vec.y]);
-// 			color = (0x010000 * (pixel_intensity[(int)vec.x][(int)vec.y])) +
-// 				(0x000100 * (pixel_intensity[(int)vec.x][(int)vec.y]))
-// 				+ (0x000001 * (pixel_intensity[(int)vec.x][(int)vec.y]));
-// 			pixelSetThread(data, vec, color);
-// 		}
-// 	}
-// 	//FREE PIXEL INTENSITY
-// }
+void	calculateBuddhabrot(t_image_data *data, t_image_value value, t_area area, void *ptr)
+{
+	t_vector	vec;
+	t_complex	new;
+	int			i;
+	int			color;
+	int			(*f)(t_complex, t_complex, t_node *);
+	t_node		list;
+
+
+	f = ptr;
+	vec.x = area.start.x - 1;
+	while (++vec.x < area.end.x)
+	{
+		vec.y = area.start.y - 1;
+		while (++vec.y < area.end.y)
+		{
+			new.real = 0;
+			new.im = 0;
+			// value.c.real = vec.x / (value.zoom * 100) + (-2.1);
+			value.c.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
+				/ (0.5 * value.zoom * WIDTH_WINDOW) + value.pos.x;
+			value.c.im = (vec.y - HEIGHT_WINDOW / 2)
+				/ (0.5 * value.zoom * HEIGHT_WINDOW) + value.pos.y;
+			i = f(new, value.c, &list);
+			exit(1);
+			color = (0x010000 * (i * 4)) +
+				(0x000100 * (i * 10)) + (0x000001 * (i * 100));
+			if (i == MAX_ITERATIONS)
+				color = 0x000000;
+			// pixelSetThread(data, vec, color);
+			(void)data;
+		}
+	}
+}
 
 void		buddhabrot(t_fractal *fractal)
 {
-	(void)fractal;
-	// pthread_t	pt[NB_THREADS];
-	// void		*data[NB_THREADS][4];
-	// void		*ret;
-	// int			id[NB_THREADS];
-	// int			i;
+	pthread_t	pt[NB_THREADS];
+	void		*data[NB_THREADS][4];
+	void		*ret;
+	int			id[NB_THREADS];
+	int			i;
 
-	// exit(1);
-	// fractal->image_data.addr_image =
-	// 	mlx_get_data_addr(fractal->mlx_image, &fractal->image_data.bpp,
-	// 		&fractal->image_data.size_line, &fractal->image_data.endian);
-	// i = -1;
-	// while (++i < NB_THREADS)
-	// {
-	// 	data[i][0] = &fractal->image_data;
-	// 	id[i] = i;
-	// 	data[i][1] = &id[i];
-	// 	data[i][2] = calculateBuddhabrot;
-	// 	data[i][3] = iteratingBuddhabrot;
-	// 	if ((pthread_create(&pt[i], NULL, threadFunction, data[i])) != 0)
-	// 		exit(-1);
-	// }
-	// i = -1;
-	// while (++i < NB_THREADS)
-	// {
-	// 	if (pthread_join(pt[i], &ret) != 0)
-	// 		exit(-1);
-	// }
+	i = -1;
+	while (++i < 1)
+	{
+		fractal->image_data[i].addr_image =
+			mlx_get_data_addr(fractal->mlx_image[i], &fractal->image_data[i].bpp,
+				&fractal->image_data[i].size_line, &fractal->image_data[i].endian);
+		data[i][0] = &fractal->image_data;
+		id[i] = i;
+		data[i][1] = &id[i];
+		data[i][2] = calculateBuddhabrot;
+		data[i][3] = iteratingBuddhabrot;
+		if ((pthread_create(&pt[i], NULL, threadFunction, data[i])) != 0)
+			exit(-1);
+	}
+	i = -1;
+	while (++i < 1)
+	{
+		if (pthread_join(pt[i], &ret) != 0)
+			exit(-1);
+	}
 }
 
-//(1.5 * (vec.x - 240)) / (0.5 * 240) = data->c.real
-//(1.5 * (vec.x - 240)) / (0.5 * 240) = -1.5
-//(1.5 * (vec.x - 240)) = (-1.5 * (0.5 * 480))
-//vec.x = ((data->c.real * (0.5 * WIDTH_WINDOW)) / 1.5) + (WIDTH_WINDOW / 2)
+//boundaries : x : -1.5 | 1.5, y : -1 | 1
+//step : x : 0.00625, y : 0.00625
 
-//(vec.y - HEIGHT_WINDOW / 2) / (0.5 * HEIGHT_WINDOW) = data->c.im;
-//vec.y = (data->c.im * (0.5 * HEIGHT_WINDOW)) + (HEIGHT_WINDOW / 2)
-
-//new_real+ = (new.real * new.real) - (new.im * new.im) + c.real
-//new_real+ = (new.real * new.real) - (new.im * new.im) + c.real
-//new_real+ = ((new.real * new.real) - (new.im * new.im)) + ((1.5 * (vec.x - 240)) / (0.5 * 480))
-
-//((new.real * new.real) - (new.im * new.im)) + ((1.5 * (vec.x - 240)) / (0.5 * 480)) = new.real+
-//((new.real * new.real) - (new.im * new.im)) + ((1.5 * (vec.x - 240)) / (0.5 * 480)) = new.real+
-//-(new.im * new.im)) + ((1.5 * (vec.x - 240)) / (0.5 * 480)) = new.real+ - (new.real * new.real)
-//(1.5 * (vec.x - 240)) / (0.5 * 480) = (new.real+ - (new.real * new.real)) + (new.im * new.im)
-//1.5 * (vec.x - 240) = ((new.real+ - (new.real * new.real)) + (new.im * new.im)) * (0.5 * 480)
-//vec.x = ((((new.real+ - (new.real * new.real)) + (new.im * new.im)) * (0.5 * 480)) / 1.5) + 240
-//vec.x = ((((new.real+ - (new.real * new.real)) + (new.im * new.im)) * (0.5 * WIDTH_WINDOW)) / 1.5) + (WIDTH_WINDOW / 2)
-
-//new.im = 2 * tmp * new.im + c.im;
-//(2 * tmp * new.im) + (vec.y - HEIGHT_WINDOW / 2) / (0.5 * HEIGHT_WINDOW) = new.im+;
-//(vec.y - HEIGHT_WINDOW / 2) / (0.5 * HEIGHT_WINDOW) = (new.im+ - (2 * tmp * new.im))
-//(vec.y - HEIGHT_WINDOW / 2) = ((new.im+ - (2 * tmp * new.im)) * (0.5 * HEIGHT_WINDOW))
-//vec.y = ((new.im+ - (2 * tmp * new.im)) * (0.5 * HEIGHT_WINDOW)) + (HEIGHT_WINDOW / 2)

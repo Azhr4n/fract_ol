@@ -23,13 +23,13 @@ void		setFractalValues(t_var *vars)
 	i = 0;
 	while (i < vars->nb_windows)
 	{
-		vars->fractals[i].image_data.c.real = DEFAULT_REAL;
-		vars->fractals[i].image_data.c.im = DEFAULT_IM;
-		vars->fractals[i].image_data.zoom = 1;
-		vars->fractals[i].image_data.pos.x = 0;
+		vars->fractals[i].image_value.c.real = DEFAULT_REAL;
+		vars->fractals[i].image_value.c.im = DEFAULT_IM;
+		vars->fractals[i].image_value.zoom = 1;
+		vars->fractals[i].image_value.pos.x = 0;
 		if (vars->fractals[i].type == MANDELBROT)
-			vars->fractals[i].image_data.pos.x = -0.5;
-		vars->fractals[i].image_data.pos.y = 0;
+			vars->fractals[i].image_value.pos.x = -0.5;
+		vars->fractals[i].image_value.pos.y = 0;
 		vars->fractals[i].print = 1;
 		i++;
 	}
@@ -45,11 +45,11 @@ void		setConstant(t_var *vars, int type, float value)
 		if (vars->fractals[i].type == JULIA && i == vars->focus)
 		{
 			if (type == REAL)
-				vars->fractals[i].image_data.c.real += value 
-					/ vars->fractals[i].image_data.zoom;
+				vars->fractals[i].image_value.c.real += value 
+					/ vars->fractals[i].image_value.zoom;
 			else if (type == IM)
-				vars->fractals[i].image_data.c.im += value
-					/ vars->fractals[i].image_data.zoom;
+				vars->fractals[i].image_value.c.im += value
+					/ vars->fractals[i].image_value.zoom;
 			if (type == REAL || type == IM)
 				vars->fractals[i].print = 1;
 		}
@@ -60,9 +60,9 @@ void		setConstant(t_var *vars, int type, float value)
 void		setZoom(t_var *vars, int type, float value, int id)
 {
 	if (type == MUL)
-		vars->fractals[id].image_data.zoom *= value;
+		vars->fractals[id].image_value.zoom *= value;
 	else if (type == DIV)
-		vars->fractals[id].image_data.zoom /= value;
+		vars->fractals[id].image_value.zoom /= value;
 	if (type == MUL || type == DIV)
 		vars->fractals[id].print = 1;
 }
@@ -167,10 +167,10 @@ static int	myButtonHook(int button, int x, int y, void *param)
 		vars->focus = *id;
 	if (button == 4)
 	{
-		vars->fractals[*id].image_data.pos.x += ((x - WIDTH_WINDOW / 2)
-			/ vars->fractals[*id].image_data.zoom) / 10000;
-		vars->fractals[*id].image_data.pos.y += ((y - HEIGHT_WINDOW / 2)
-			/ vars->fractals[*id].image_data.zoom) / 10000;
+		vars->fractals[*id].image_value.pos.x += ((x - WIDTH_WINDOW / 2)
+			/ vars->fractals[*id].image_value.zoom) / 10000;
+		vars->fractals[*id].image_value.pos.y += ((y - HEIGHT_WINDOW / 2)
+			/ vars->fractals[*id].image_value.zoom) / 10000;
 		setZoom(vars, MUL, 1.01, *id);
 	}
 	else if (button == 6)
@@ -184,6 +184,7 @@ static int	refresh(void *param)
 {
 	t_var	*vars;
 	int		i;
+	int		inc;
 
 	vars = (t_var *)param;
 	i = 0;
@@ -193,9 +194,14 @@ static int	refresh(void *param)
 		{
 			vars->function_pointers[vars->fractals[i].type]
 				(&vars->fractals[i]);
-			mlx_put_image_to_window(vars->mlx_core,
-				vars->fractals[i].mlx_window,
-				vars->fractals[i].mlx_image, 0, 0);
+			inc = 0;
+			while (inc < NB_THREADS)
+			{
+				mlx_put_image_to_window(vars->mlx_core,
+					vars->fractals[i].mlx_window,
+					vars->fractals[i].mlx_image[inc], inc * (WIDTH_WINDOW / NB_THREADS), 0);
+				inc++;
+			}
 			vars->fractals[i].print = 0;
 		}
 		i++;

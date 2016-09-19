@@ -70,7 +70,6 @@ void		cleanVars(t_var *vars)
 		i = 0;
 		while (i < vars->nb_windows)
 		{
-			mlx_destroy_image(vars->mlx_core, vars->fractals[i].mlx_image);
 			mlx_destroy_window(vars->mlx_core, vars->fractals[i].mlx_window);
 			i++;
 		}
@@ -80,11 +79,18 @@ void		cleanVars(t_var *vars)
 
 static void	allocateVars(t_var *vars, int index, int type)
 {
+	int		i;
+
 	vars->fractals[index].type = type;
 	vars->fractals[index].mlx_window = mlx_new_window(vars->mlx_core,
 		WIDTH_WINDOW, HEIGHT_WINDOW, vars->args[type]);
-	vars->fractals[index].mlx_image = mlx_new_image(vars->mlx_core,
-		WIDTH_WINDOW, HEIGHT_WINDOW);
+	i = 0;
+	while (i < NB_THREADS)
+	{
+		vars->fractals[index].mlx_image[i] = mlx_new_image(vars->mlx_core,
+			(WIDTH_WINDOW / NB_THREADS), HEIGHT_WINDOW);
+		i++;
+	}
 	vars->fract_set = 1;
 	vars->real_const_val = 0.001;
 	vars->im_const_val = 0.00001;

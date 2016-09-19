@@ -19,8 +19,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-
 int	iteratingMandelbrot(t_complex new, t_complex c)
 {
 	t_complex	old;
@@ -40,7 +38,7 @@ int	iteratingMandelbrot(t_complex new, t_complex c)
 	return (i);
 }
 
-void	calculateMandelbrot(t_image_data *data, t_area area, void *ptr)
+void	calculateMandelbrot(t_image_data *data, t_image_value value, t_area area, void *ptr)
 {
 	t_vector	vec;
 	t_complex	new;
@@ -57,19 +55,33 @@ void	calculateMandelbrot(t_image_data *data, t_area area, void *ptr)
 		{
 			new.real = 0;
 			new.im = 0;
-			data->c.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
-				/ (0.5 * data->zoom * WIDTH_WINDOW) + data->pos.x;
-			data->c.im = (vec.y - HEIGHT_WINDOW / 2)
-				/ (0.5 * data->zoom * HEIGHT_WINDOW) + data->pos.y;
-			i = f(new, data->c);
+			value.c.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
+				/ (0.5 * value.zoom * WIDTH_WINDOW) + value.pos.x;
+			value.c.im = (vec.y - HEIGHT_WINDOW / 2)
+				/ (0.5 * value.zoom * HEIGHT_WINDOW) + value.pos.y;
+			i = f(new, value.c);
 			color = (0x010000 * (i * 4)) +
 				(0x000100 * (i * 10)) + (0x000001 * (i * 100));
 			if (i == MAX_ITERATIONS)
 				color = 0x000000;
+			// if (vec.y == 0 && vec.x > 239)
+			// 	printf("vec.x : %f\n", vec.x);
 			pixelSetThread(data, vec, color);
 		}
 	}
 }
+
+// void		setDataValues(void ***data, t_fractal *fractal, int *id, int i)
+// {
+// 	fractal->image_data[*i].addr_image =
+// 		mlx_get_data_addr(fractal->mlx_image[*i], &fractal->image_data[*i].bpp,
+// 			&fractal->image_data[*i].size_line, &fractal->image_data[*i].endian);
+// 	data[i][0] = fractal;
+// 	id[i] = i;
+// 	data[i][1] = &id[i];
+// 	data[i][2] = calculateMandelbrot;
+// 	data[i][3] = iteratingMandelbrot;
+// }
 
 void		mandelbrot(t_fractal *fractal)
 {
@@ -79,12 +91,13 @@ void		mandelbrot(t_fractal *fractal)
 	int			id[NB_THREADS];
 	int			i;
 
-	fractal->image_data.addr_image =
-		mlx_get_data_addr(fractal->mlx_image, &BPP, &SL, &ED);
 	i = -1;
 	while (++i < NB_THREADS)
 	{
-		data[i][0] = &fractal->image_data;
+		fractal->image_data[i].addr_image =
+			mlx_get_data_addr(fractal->mlx_image[i], &fractal->image_data[i].bpp,
+				&fractal->image_data[i].size_line, &fractal->image_data[i].endian);
+		data[i][0] = fractal;
 		id[i] = i;
 		data[i][1] = &id[i];
 		data[i][2] = calculateMandelbrot;

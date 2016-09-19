@@ -33,13 +33,9 @@
 # define SHIFT 257
 
 # define MAX_ITERATIONS 2048
-# define NB_THREADS 16
+# define NB_THREADS 48
 
 # define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
-# define BPP fractal->image_data.bpp
-# define SL fractal->image_data.size_line
-# define ED fractal->image_data.endian
 
 #include <mlx.h>
 
@@ -78,23 +74,27 @@ typedef struct		s_area
 	t_vector		end;
 }					t_area;
 
+typedef	struct		s_image_value
+{
+	double			zoom;
+	t_vector		pos;
+	t_complex		c;
+}					t_image_value;
+
 typedef	struct		s_image_data
 {
 	char			*addr_image;
 	int				size_line;
 	int				endian;
 	int				bpp;
-	double			zoom;
-	t_vector		pos;
-	t_complex		c;
-
 }					t_image_data;
 
 typedef struct		s_fractal
 {
 	void			*mlx_window;
-	void			*mlx_image;
-	t_image_data	image_data;
+	void			*mlx_image[NB_THREADS];
+	t_image_data	image_data[NB_THREADS];
+	t_image_value	image_value;
 	int				type;
 	int				print;
 }					t_fractal;
@@ -129,11 +129,11 @@ void	*threadFunction(void *packed_data);
 
 void	julia(t_fractal *fractal);
 int		iteratingJulia(t_complex new, t_complex c);
-void	calculateJulia(t_image_data *data, t_area area, void *ptr);
+void	calculateJulia(t_image_data *data, t_image_value *value, t_area area, void *ptr);
 
 void	mandelbrot(t_fractal *fractal);
 int		iteratingMandelbrot(t_complex new, t_complex c);
-void	calculateMandelbrot(t_image_data *data, t_area area, void *ptr);
+void	calculateMandelbrot(t_image_data *data, t_image_value value, t_area area, void *ptr);
 
 void	buddhabrot(t_fractal *fractal);
 // int		iteratingBuddhabrot(t_complex new, t_complex c);

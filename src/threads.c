@@ -36,9 +36,9 @@ void		*threadFunction(void *packed_data)
 	fractal = data[0];
 	id = data[1];
 	area.start.x = *id * (WIDTH_WINDOW / NB_THREADS);
-	area.start.y = 0;
+	area.start.y = -1 * *id;
 	area.end.x = area.start.x + (WIDTH_WINDOW / NB_THREADS);
-	area.end.y = HEIGHT_WINDOW;
+	area.end.y = HEIGHT_WINDOW - 1 * *id;
 	threadFunctionNext(data, fractal, area, id);
 	return (NULL);
 }

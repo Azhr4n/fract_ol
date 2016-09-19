@@ -33,7 +33,7 @@
 # define SHIFT 257
 
 # define MAX_ITERATIONS 2048
-# define NB_THREADS 48
+# define NB_THREADS 24
 
 # define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
@@ -129,7 +129,7 @@ void	*threadFunction(void *packed_data);
 
 void	julia(t_fractal *fractal);
 int		iteratingJulia(t_complex new, t_complex c);
-void	calculateJulia(t_image_data *data, t_image_value *value, t_area area, void *ptr);
+void	calculateJulia(t_image_data *data, t_image_value value, t_area area, void *ptr);
 
 void	mandelbrot(t_fractal *fractal);
 int		iteratingMandelbrot(t_complex new, t_complex c);

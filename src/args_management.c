@@ -57,21 +57,21 @@ void		setVars(t_var *vars)
 void		cleanVars(t_var *vars)
 {
 	int	i;
+	int	j;
 
-	i = 0;
-	while (i < NB_ARGS)
-	{
+	i = -1;
+	while (++i < NB_ARGS)
 		free(vars->args[i]);
-		i++;
-	}
 	free(vars->args);
 	if (vars->fract_set)
 	{
-		i = 0;
-		while (i < vars->nb_windows)
+		i = -1;
+		while (++i < vars->nb_windows)
 		{
+			j = -1;
+			while (++j < NB_THREADS)
+				mlx_destroy_image(vars->mlx_core, vars->fractals[i].mlx_image[j]);
 			mlx_destroy_window(vars->mlx_core, vars->fractals[i].mlx_window);
-			i++;
 		}
 		free(vars->fractals);
 	}

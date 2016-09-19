@@ -64,8 +64,6 @@ void	calculateMandelbrot(t_image_data *data, t_image_value value, t_area area, v
 				(0x000100 * (i * 10)) + (0x000001 * (i * 100));
 			if (i == MAX_ITERATIONS)
 				color = 0x000000;
-			// if (vec.y == 0 && vec.x > 239)
-			// 	printf("vec.x : %f\n", vec.x);
 			pixelSetThread(data, vec, color);
 		}
 	}

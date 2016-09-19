@@ -35,7 +35,7 @@ int	iteratingJulia(t_complex new, t_complex c)
 	return (i);
 }
 
-void	calculateJulia(t_image_data *data, t_image_value *value, t_area area, void *ptr)
+void	calculateJulia(t_image_data *data, t_image_value value, t_area area, void *ptr)
 {
 	t_vector	vec;
 	t_complex	new;
@@ -51,10 +51,10 @@ void	calculateJulia(t_image_data *data, t_image_value *value, t_area area, void 
 		while (++vec.y < area.end.y)
 		{
 			new.real = 1.5 * (vec.x - WIDTH_WINDOW / 2)
-				/ (0.5 * value->zoom * WIDTH_WINDOW) + value->pos.x;
+				/ (0.5 * value.zoom * WIDTH_WINDOW) + value.pos.x;
 			new.im = (vec.y - HEIGHT_WINDOW / 2)
-				/ (0.5 * value->zoom * HEIGHT_WINDOW) + value->pos.y;
-			i = f(new, value->c);
+				/ (0.5 * value.zoom * HEIGHT_WINDOW) + value.pos.y;
+			i = f(new, value.c);
 			color = (0x010000 * (i * 4)) +
 				(0x000100 * (i * 2)) + (0x000001 * (i * 3));
 			if (i == MAX_ITERATIONS)
@@ -78,7 +78,7 @@ void		julia(t_fractal *fractal)
 		fractal->image_data[i].addr_image =
 			mlx_get_data_addr(fractal->mlx_image[i], &fractal->image_data[i].bpp,
 				&fractal->image_data[i].size_line, &fractal->image_data[i].endian);
-		data[i][0] = &fractal->image_data;
+		data[i][0] = fractal;
 		id[i] = i;
 		data[i][1] = &id[i];
 		data[i][2] = calculateJulia;

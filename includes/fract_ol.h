@@ -33,7 +33,7 @@
 # define SHIFT 257
 
 # define MAX_ITERATIONS 2048
-# define NB_THREADS 24
+# define NB_THREADS 1
 
 # define MIN(a, b) (((a) < (b)) ? (a) : (b))
 

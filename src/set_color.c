@@ -1,38 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   set_color.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pivanovi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/07 12:38:18 by pivanovi          #+#    #+#             */
-/*   Updated: 2016/09/07 12:38:20 by pivanovi         ###   ########.fr       */
+/*   Created: 2016/09/21 11:32:16 by pivanovi          #+#    #+#             */
+/*   Updated: 2016/09/21 11:32:17 by pivanovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <libft.h>
-
 #include "fract_ol.h"
 
-int		main(int ac, char **av)
+int		setColor(int iterations, int r, int g, int b)
 {
-	t_var	vars;
-
-	setVars(&vars);
-	if (ac > 1 && ac <= 4)
-	{
-		if (argsValid(&vars, ac, av) == 0)
-		{
-			free(vars.args);
-			ft_putendl("Arguments are not valids.");
-			return (0);
-		}
-		else
-			main_loop(&vars);
-	}
+	if (iterations == MAX_ITERATIONS)
+		return (0x000000);
 	else
-		ft_putendl("Either too much args or not any.");
-	cleanVars(&vars);
-	return (0);
+		return ((0x010000 * (iterations * r)) +
+		(0x000100 * (iterations * g)) + (0x000001 * (iterations * b)));
 }

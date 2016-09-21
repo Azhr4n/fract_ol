@@ -33,10 +33,16 @@
 # define SHIFT 257
 
 # define MAX_ITERATIONS 2048
-# define NB_THREADS 1
+# define MAX_ITERATIONS_B 250
+# define NB_THREADS 24
 
 # define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+# define ABPP &fractal->image_data[i].bpp
+# define ASL &fractal->image_data[i].size_line
+# define AEN &fractal->image_data[i].endian
+
+#include <pthread.h>
 #include <mlx.h>
 
 enum {
@@ -82,8 +88,11 @@ typedef struct		s_node
 
 typedef	struct		s_image_value
 {
+	t_area			area;
 	double			zoom;
 	t_vector		pos;
+	t_vector		vec;
+	t_complex		new;
 	t_complex		c;
 }					t_image_value;
 
@@ -93,6 +102,7 @@ typedef	struct		s_image_data
 	int				size_line;
 	int				endian;
 	int				bpp;
+	int				***color_map;
 }					t_image_data;
 
 typedef struct		s_fractal
@@ -101,11 +111,19 @@ typedef struct		s_fractal
 	void			*mlx_image[NB_THREADS];
 	t_image_data	image_data[NB_THREADS];
 	t_image_value	image_value;
-	int				type;
 	int				print;
+	int				type;
+	
 }					t_fractal;
 
 typedef void (*t_fp) (t_fractal *);
+
+typedef struct		s_thread
+{
+	pthread_t		pt[NB_THREADS];
+	void			*ret[NB_THREADS];
+	int				id[NB_THREADS];
+}					t_thread;
 
 typedef struct		s_var
 {
@@ -135,21 +153,28 @@ void	*threadFunction(void *packed_data);
 
 void	julia(t_fractal *fractal);
 int		iteratingJulia(t_complex new, t_complex c);
-void	calculateJulia(t_image_data *data, t_image_value value, t_area area, void *ptr);
+void	calculateJulia(t_image_data *data, t_image_value value, void *ptr);
 
 void	mandelbrot(t_fractal *fractal);
 int		iteratingMandelbrot(t_complex new, t_complex c);
-void	calculateMandelbrot(t_image_data *data, t_image_value value, t_area area, void *ptr);
+void	calculateMandelbrot(t_image_data *data, t_image_value value, void *ptr);
 
 void	buddhabrot(t_fractal *fractal);
 // int		iteratingBuddhabrot(t_complex new, t_complex c);
 // void	calculateBuddhabrot(t_image_data *data, t_area area,
 // 	int (*f)(t_complex, t_complex));
 
-void	pixelSetThread(t_image_data *data, t_vector vec, int color);
-void	calculate(t_image_data *data, t_area area,
-	int (*f)(t_complex, t_complex));
+void	pixelSetThread(t_image_data *data, t_vector vec, t_vector start,
+	int color);
+int		setColor(int iterations, int r, int g, int b);
 
 void	strLower(char *str);
+void	free2Dint(int **tab, int width);
+
+t_node	*createNewNode(float x, float y);
+t_node	*insertNodeAtEnd(t_node *node, t_node *new);
+void	clearList(t_node **node);
+
+
 
 #endif

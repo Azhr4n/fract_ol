@@ -27,7 +27,8 @@ void		setFractalValues(t_var *vars)
 		vars->fractals[i].image_value.c.im = DEFAULT_IM;
 		vars->fractals[i].image_value.zoom = 1;
 		vars->fractals[i].image_value.pos.x = 0;
-		if (vars->fractals[i].type == MANDELBROT)
+		if (vars->fractals[i].type == MANDELBROT 
+			|| vars->fractals[i].type == BUDDHABROT)
 			vars->fractals[i].image_value.pos.x = -0.5;
 		vars->fractals[i].image_value.pos.y = 0;
 		vars->fractals[i].print = 1;

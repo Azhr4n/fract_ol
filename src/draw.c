@@ -14,12 +14,22 @@
 
 #include "fract_ol.h"
 
-void	pixelSetThread(t_image_data *data, t_vector vec, int color)
+void	pixelSetThread(t_image_data *data, t_vector vec, t_vector start,
+	int color)
 {
-	data->addr_image[((int)vec.x * data->bpp / 8)
-		+ (int)vec.y * data->size_line] = (color & 0xFF0000) >> 16;
-	data->addr_image[((int)vec.x * data->bpp / 8)
-		+ (int)vec.y * data->size_line + 1] = (color & 0xFF00) >> 8;
-	data->addr_image[((int)vec.x * data->bpp / 8)
-		+ (int)vec.y * data->size_line + 2] = (color & 0xFF) >> 0;
+	data->addr_image[((int)(vec.x - start.x) * data->bpp / 8)
+		+ (int)(vec.y - start.y) * data->size_line] = (color & 0xFF0000) >> 16;
+	data->addr_image[((int)(vec.x - start.x) * data->bpp / 8)
+		+ (int)(vec.y - start.y) * data->size_line + 1] = (color & 0xFF00) >> 8;
+	data->addr_image[((int)(vec.x - start.x) * data->bpp / 8)
+		+ (int)(vec.y - start.y) * data->size_line + 2] = (color & 0xFF) >> 0;
+}
+
+int		setColor(int iterations, int r, int g, int b)
+{
+	if (iterations == MAX_ITERATIONS)
+		return (0x000000);
+	else
+		return ((0x010000 * (iterations * r)) +
+		(0x000100 * (iterations * g)) + (0x000001 * (iterations * b)));
 }

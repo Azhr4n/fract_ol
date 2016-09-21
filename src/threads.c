@@ -29,34 +29,16 @@ void		*threadFunction(void *packed_data)
 {
 	void			**data;
 	t_fractal		*fractal;
-	t_area			area;
 	int				*id;
 
 	data = packed_data;
 	fractal = data[0];
 	id = data[1];
-	area.start.x = *id * (WIDTH_WINDOW / NB_THREADS);
-	area.start.y = -1 * *id;
-	area.end.x = area.start.x + (WIDTH_WINDOW / NB_THREADS);
-	area.end.y = HEIGHT_WINDOW - 1 * *id;
-	threadFunctionNext(data, fractal, area, id);
+	fractal->image_value.area.start.x = *id * (WIDTH_WINDOW / NB_THREADS);
+	fractal->image_value.area.start.y = 0;
+	fractal->image_value.area.end.x = fractal->image_value.area.start.x + (WIDTH_WINDOW / NB_THREADS);
+	fractal->image_value.area.end.y = HEIGHT_WINDOW;
+
+	threadFunctionNext(data, fractal, fractal->image_value.area, id);
 	return (NULL);
 }
-
-// void		*threadFunctionBuddha(void *packed_data)
-// {
-// 	void			**data;
-// 	t_image_data	*image_data;
-// 	int				*id;
-// 	t_area			area;
-
-// 	data = packed_data;
-// 	image_data = data[0];
-// 	id = data[1];
-// 	area.start.x = *id * (WIDTH_WINDOW / NB_THREADS);
-// 	area.start.y = 0;
-// 	area.end.x = area.start.x + (WIDTH_WINDOW / NB_THREADS);
-// 	area.end.y = HEIGHT_WINDOW;
-// 	threadFunctionNext(data, image_data, area);
-// 	return (NULL);
-// }

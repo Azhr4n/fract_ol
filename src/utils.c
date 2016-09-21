@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pivanovi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/07 12:38:18 by pivanovi          #+#    #+#             */
-/*   Updated: 2016/09/07 12:38:20 by pivanovi         ###   ########.fr       */
+/*   Created: 2016/09/21 14:55:47 by pivanovi          #+#    #+#             */
+/*   Updated: 2016/09/21 14:55:48 by pivanovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,21 @@
 
 #include "fract_ol.h"
 
-int		main(int ac, char **av)
+void		free2Dint(int **tab, int width)
 {
-	t_var	vars;
+	int		i;
 
-	setVars(&vars);
-	if (ac > 1 && ac <= 4)
+	i = -1;
+	while (++i < width)
+		free(tab[i]);
+	free(tab);
+}
+
+void	strLower(char *str)
+{
+	while (*str != 0)
 	{
-		if (argsValid(&vars, ac, av) == 0)
-		{
-			free(vars.args);
-			ft_putendl("Arguments are not valids.");
-			return (0);
-		}
-		else
-			main_loop(&vars);
+		*str = (char)ft_tolower(*str);
+		str++;
 	}
-	else
-		ft_putendl("Either too much args or not any.");
-	cleanVars(&vars);
-	return (0);
 }

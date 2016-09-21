@@ -15,7 +15,6 @@
 
 # define WIDTH_WINDOW 480
 # define HEIGHT_WINDOW 320
-# define TITLE "FRACT_OLOLOL"
 
 # define DEFAULT_REAL -0.7
 # define DEFAULT_IM 0.27015
@@ -42,8 +41,19 @@
 # define ASL &fractal->image_data[i].size_line
 # define AEN &fractal->image_data[i].endian
 
-#include <pthread.h>
-#include <mlx.h>
+# define VTFF vars->fractals[i].mlx_image[inc]
+
+# define CX(x) 1.5 * (x - WIDTH_WINDOW / 2) / (0.5 * value.zoom * WIDTH_WINDOW)
+# define CY(y) (y - HEIGHT_WINDOW / 2) / (0.5 * value.zoom * HEIGHT_WINDOW)
+
+# define RFX roundf(value.vec.x)
+# define RFY roundf(value.vec.y)
+
+# define RFXC (RFX < WIDTH_WINDOW && RFX >= 0)
+# define RFYC (RFY < WIDTH_WINDOW && RFY >= 0)
+
+# include <pthread.h>
+# include <mlx.h>
 
 enum {
 	JULIA,
@@ -89,6 +99,8 @@ typedef struct		s_node
 typedef	struct		s_image_value
 {
 	t_area			area;
+	t_vector		step;
+	t_node			*list;
 	double			zoom;
 	t_vector		pos;
 	t_vector		vec;
@@ -113,10 +125,10 @@ typedef struct		s_fractal
 	t_image_value	image_value;
 	int				print;
 	int				type;
-	
 }					t_fractal;
 
-typedef void (*t_fp) (t_fractal *);
+typedef void		(*t_fp) (t_fractal *);
+typedef int			(*t_bob)(t_complex, t_complex);
 
 typedef struct		s_thread
 {
@@ -141,40 +153,41 @@ typedef struct		s_var
 	int				fract_set;
 }					t_var;
 
-void	main_loop(t_var *vars);
+void				main_loop(t_var *vars);
 
-void	setVars(t_var *vars);
-void	cleanVars(t_var *vars);
-int		argsValid(t_var *vars, int ac, char **av);
+void				set_vars(t_var *vars);
+void				clean_vars(t_var *vars);
+int					args_valid(t_var *vars, int ac, char **av);
 
-int		getIndexFocus(int *tab, int len, int focus);
+void				*thread_func(void *packed_data);
 
-void	*threadFunction(void *packed_data);
+void				julia(t_fractal *fractal);
+void				mandelbrot(t_fractal *fractal);
+void				buddhabrot(t_fractal *fractal);
 
-void	julia(t_fractal *fractal);
-int		iteratingJulia(t_complex new, t_complex c);
-void	calculateJulia(t_image_data *data, t_image_value value, void *ptr);
+int					my_key_pressed(int keycode, void *param);
+int					my_key_released(int keycode, void *param);
+int					my_button_hook(int button, int x, int y, void *param);
+int					refresh(void *param);
 
-void	mandelbrot(t_fractal *fractal);
-int		iteratingMandelbrot(t_complex new, t_complex c);
-void	calculateMandelbrot(t_image_data *data, t_image_value value, void *ptr);
+void				set_fractal_values(t_var *vars);
+void				set_constant(t_var *vars, int type, float value);
+void				set_zoom(t_var *vars, int type, float value, int id);
+int					my_mouse_hook(int x, int y, void *param);
+void				change_constant_values(int keycode, t_var *vars);
 
-void	buddhabrot(t_fractal *fractal);
-// int		iteratingBuddhabrot(t_complex new, t_complex c);
-// void	calculateBuddhabrot(t_image_data *data, t_area area,
-// 	int (*f)(t_complex, t_complex));
+void				pixel_set_thread(t_image_data *data,
+	t_vector vec, t_vector start, int color);
+int					set_color(int iterations, int r, int g, int b);
 
-void	pixelSetThread(t_image_data *data, t_vector vec, t_vector start,
-	int color);
-int		setColor(int iterations, int r, int g, int b);
+void				free2d_int(int **tab, int width);
+void				str_lower(char *str);
+int					**allocate_color_map(int width, int height);
+void				set_buddha_values(t_image_value value,
+	t_complex *c, t_complex *new);
 
-void	strLower(char *str);
-void	free2Dint(int **tab, int width);
-
-t_node	*createNewNode(float x, float y);
-t_node	*insertNodeAtEnd(t_node *node, t_node *new);
-void	clearList(t_node **node);
-
-
+t_node				*create_new_node(float x, float y);
+t_node				*insert_node_at_end(t_node *node, t_node *new);
+void				clear_list(t_node **node);
 
 #endif

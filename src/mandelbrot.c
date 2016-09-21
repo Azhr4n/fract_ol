@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int	iteratingMandelbrot(t_complex new, t_complex c)
+int		iterating_mandelbrot(t_complex new, t_complex c)
 {
 	t_complex	old;
 	int			i;
@@ -32,13 +32,13 @@ int	iteratingMandelbrot(t_complex new, t_complex c)
 		new.real = (old.real * old.real) - (old.im * old.im) + c.real;
 		new.im = 2 * old.real * old.im + c.im;
 		if (new.real * new.real + new.im * new.im > 4)
-			break;
+			break ;
 		i++;
 	}
 	return (i);
 }
 
-void	calculateMandelbrot(t_image_data *data, t_image_value value, void *ptr)
+void	calculate_mandelbrot(t_image_data *data, t_image_value value, void *ptr)
 {
 	int			(*f)(t_complex, t_complex);
 
@@ -55,13 +55,13 @@ void	calculateMandelbrot(t_image_data *data, t_image_value value, void *ptr)
 				/ (0.5 * value.zoom * WIDTH_WINDOW) + value.pos.x;
 			value.c.im = (value.vec.y - HEIGHT_WINDOW / 2)
 				/ (0.5 * value.zoom * HEIGHT_WINDOW) + value.pos.y;
-			pixelSetThread(data, value.vec, value.area.start,
-				setColor(f(value.new, value.c), 4, 10, 100));
+			pixel_set_thread(data, value.vec, value.area.start,
+				set_color(f(value.new, value.c), 4, 10, 100));
 		}
 	}
 }
 
-void		mandelbrot(t_fractal *fractal)
+void	mandelbrot(t_fractal *fractal)
 {
 	t_thread	thread;
 	void		*data[NB_THREADS][4];
@@ -75,9 +75,9 @@ void		mandelbrot(t_fractal *fractal)
 		data[i][0] = fractal;
 		thread.id[i] = i;
 		data[i][1] = &(thread.id[i]);
-		data[i][2] = calculateMandelbrot;
-		data[i][3] = iteratingMandelbrot;
-		if ((pthread_create(&(thread.pt[i]), NULL, threadFunction, data[i])) != 0)
+		data[i][2] = calculate_mandelbrot;
+		data[i][3] = iterating_mandelbrot;
+		if ((pthread_create(&(thread.pt[i]), 0, thread_func, data[i])) != 0)
 			exit(-1);
 	}
 	i = -1;

@@ -19,6 +19,7 @@ SRC =	src/main.c				\
 		src/draw.c				\
 		src/list.c				\
 		src/loop.c				\
+		src/loop2.c				\
 		src/utils.c				\
 		src/julia.c				\
 		src/threads.c			\

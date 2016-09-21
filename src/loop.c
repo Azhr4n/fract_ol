@@ -14,106 +14,7 @@
 
 #include "fract_ol.h"
 
-#include <stdio.h>
-
-void		setFractalValues(t_var *vars)
-{
-	int		i;
-
-	i = 0;
-	while (i < vars->nb_windows)
-	{
-		vars->fractals[i].image_value.c.real = DEFAULT_REAL;
-		vars->fractals[i].image_value.c.im = DEFAULT_IM;
-		vars->fractals[i].image_value.zoom = 1;
-		vars->fractals[i].image_value.pos.x = 0;
-		if (vars->fractals[i].type == MANDELBROT 
-			|| vars->fractals[i].type == BUDDHABROT)
-			vars->fractals[i].image_value.pos.x = -0.5;
-		vars->fractals[i].image_value.pos.y = 0;
-		vars->fractals[i].print = 1;
-		i++;
-	}
-}
-
-void		setConstant(t_var *vars, int type, float value)
-{
-	int		i;
-
-	i = 0;
-	while (i < vars->nb_windows)
-	{
-		if (vars->fractals[i].type == JULIA && i == vars->focus)
-		{
-			if (type == REAL)
-				vars->fractals[i].image_value.c.real += value 
-					/ vars->fractals[i].image_value.zoom;
-			else if (type == IM)
-				vars->fractals[i].image_value.c.im += value
-					/ vars->fractals[i].image_value.zoom;
-			if (type == REAL || type == IM)
-				vars->fractals[i].print = 1;
-		}
-		i++;
-	}
-}
-
-void		setZoom(t_var *vars, int type, float value, int id)
-{
-	if (type == MUL)
-		vars->fractals[id].image_value.zoom *= value;
-	else if (type == DIV)
-		vars->fractals[id].image_value.zoom /= value;
-	if (type == MUL || type == DIV)
-		vars->fractals[id].print = 1;
-}
-
-static int	myMouseHook(int x, int y, void *param)
-{
-	t_var		*vars;
-
-	vars = (t_var *)param;
-
-	if ((x - vars->mouse_pos.x) < 0)
-		setConstant(vars, REAL, -vars->real_const_val);
-	else if ((x - vars->mouse_pos.x) > 0)
-		setConstant(vars, REAL, vars->real_const_val);
-	if (y - vars->mouse_pos.y < 0)
-		setConstant(vars, IM, -vars->im_const_val);
-	else if (y - vars->mouse_pos.y > 0)
-		setConstant(vars, IM, vars->im_const_val);
-	vars->mouse_pos.x = x;
-	vars->mouse_pos.y = y;
-	return (0);
-}
-
-static void	changeConstantValues(int keycode, t_var *vars)
-{
-	if (keycode == PLUS)
-	{
-		if (vars->shift)
-			vars->im_const_val += DEFAULT_IM_ADD;
-		else
-			vars->real_const_val += DEFAULT_REAL_ADD;
-	}
-	else if (keycode == MINUS)
-	{
-		if (vars->shift)
-		{
-			if (vars->im_const_val > DEFAULT_IM_ADD)
-				vars->im_const_val -= DEFAULT_IM_ADD;
-		}
-		else
-		{
-			if (vars->real_const_val > DEFAULT_REAL_ADD)
-				vars->real_const_val -= DEFAULT_REAL_ADD;
-		}
-	}
-	else if (keycode == RESET)
-		setFractalValues(vars);
-}
-
-static int myKeyPressed(int keycode, void *param)
+int		my_key_pressed(int keycode, void *param)
 {
 	t_var	*vars;
 
@@ -128,18 +29,18 @@ static int myKeyPressed(int keycode, void *param)
 		vars->dir.x += 1;
 	if (keycode == SHIFT)
 		vars->shift = 1;
-	changeConstantValues(keycode, vars);
+	change_constant_values(keycode, vars);
 	return (0);
 }
 
-static int myKeyReleased(int keycode, void *param)
+int		my_key_released(int keycode, void *param)
 {
 	t_var	*vars;
 
 	vars = (t_var *)param;
 	if (keycode == ESC_KEYCODE)
 	{
-		cleanVars(vars);
+		clean_vars(vars);
 		exit(0);
 	}
 	if (keycode == UP)
@@ -155,7 +56,7 @@ static int myKeyReleased(int keycode, void *param)
 	return (0);
 }
 
-static int	myButtonHook(int button, int x, int y, void *param)
+int		my_button_hook(int button, int x, int y, void *param)
 {
 	void	**tab;
 	t_var	*vars;
@@ -172,16 +73,16 @@ static int	myButtonHook(int button, int x, int y, void *param)
 			/ vars->fractals[*id].image_value.zoom) / 10000;
 		vars->fractals[*id].image_value.pos.y += ((y - HEIGHT_WINDOW / 2)
 			/ vars->fractals[*id].image_value.zoom) / 10000;
-		setZoom(vars, MUL, 1.01, *id);
+		set_zoom(vars, MUL, 1.01, *id);
 	}
 	else if (button == 6)
-		setZoom(vars, MUL, 1.01, *id);
+		set_zoom(vars, MUL, 1.01, *id);
 	else if (button == 5)
-		setZoom(vars, DIV, 1.01, *id);
+		set_zoom(vars, DIV, 1.01, *id);
 	return (1);
 }
 
-static int	refresh(void *param)
+int		refresh(void *param)
 {
 	t_var	*vars;
 	int		i;
@@ -193,14 +94,14 @@ static int	refresh(void *param)
 	{
 		if (vars->fractals[i].print)
 		{
-			vars->function_pointers[vars->fractals[i].type]
-				(&vars->fractals[i]);
+			vars->function_pointers[vars->fractals[i].type](
+				&vars->fractals[i]);
 			inc = 0;
 			while (inc < NB_THREADS)
 			{
 				mlx_put_image_to_window(vars->mlx_core,
 					vars->fractals[i].mlx_window,
-					vars->fractals[i].mlx_image[inc], inc * (WIDTH_WINDOW / NB_THREADS), 0);
+					VTFF, inc * (WIDTH_WINDOW / NB_THREADS), 0);
 				inc++;
 			}
 			vars->fractals[i].print = 0;
@@ -210,13 +111,13 @@ static int	refresh(void *param)
 	return (0);
 }
 
-void		main_loop(t_var *vars)
+void	main_loop(t_var *vars)
 {
 	int		i;
 	int		id[vars->nb_windows];
 	void	*tab[vars->nb_windows][2];
 
-	setFractalValues(vars);
+	set_fractal_values(vars);
 	vars->focus = vars->nb_windows;
 	i = 0;
 	while (i < vars->nb_windows)
@@ -224,11 +125,13 @@ void		main_loop(t_var *vars)
 		tab[i][0] = vars;
 		id[i] = i;
 		tab[i][1] = &id[i];
-		mlx_mouse_hook(vars->fractals[i].mlx_window, myButtonHook, tab[i]);
-		mlx_hook(vars->fractals[i].mlx_window, 6, (1L<<6), myMouseHook, vars);
-		mlx_hook(vars->fractals[i].mlx_window, 2, (1L<<0), myKeyPressed, vars);
+		mlx_mouse_hook(vars->fractals[i].mlx_window, my_button_hook, tab[i]);
+		mlx_hook(vars->fractals[i].mlx_window, 6,
+			(1L << 6), my_mouse_hook, vars);
+		mlx_hook(vars->fractals[i].mlx_window, 2,
+			(1L << 0), my_key_pressed, vars);
 		mlx_hook(vars->fractals[i].mlx_window, 3,
-			(1L<<1), myKeyReleased, vars);
+			(1L << 1), my_key_released, vars);
 		i++;
 	}
 	mlx_loop_hook(vars->mlx_core, refresh, vars);

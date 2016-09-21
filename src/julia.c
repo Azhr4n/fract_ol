@@ -16,7 +16,7 @@
 
 #include "fract_ol.h"
 
-int	iteratingJulia(t_complex new, t_complex c)
+int		iterating_julia(t_complex new, t_complex c)
 {
 	t_complex	old;
 	int			i;
@@ -29,16 +29,16 @@ int	iteratingJulia(t_complex new, t_complex c)
 		new.real = (old.real * old.real) - (old.im * old.im) + c.real;
 		new.im = 2 * old.real * old.im + c.im;
 		if ((new.real * new.real) + (new.im * new.im) > 4)
-			break;
+			break ;
 		i++;
 	}
 	return (i);
 }
 
-void	calculateJulia(t_image_data *data, t_image_value value, void *ptr)
+void	calculate_julia(t_image_data *data, t_image_value value, void *ptr)
 {
-	int			(*f)(t_complex, t_complex);
-	
+	int		(*f)(t_complex, t_complex);
+
 	f = ptr;
 	value.vec.x = value.area.start.x - 1;
 	while (++value.vec.x < value.area.end.x)
@@ -50,13 +50,13 @@ void	calculateJulia(t_image_data *data, t_image_value value, void *ptr)
 				/ (0.5 * value.zoom * WIDTH_WINDOW) + value.pos.x;
 			value.new.im = (value.vec.y - HEIGHT_WINDOW / 2)
 				/ (0.5 * value.zoom * HEIGHT_WINDOW) + value.pos.y;
-			pixelSetThread(data, value.vec, value.area.start,
-				setColor(f(value.new, value.c), 4, 2, 3));
+			pixel_set_thread(data, value.vec, value.area.start,
+				set_color(f(value.new, value.c), 4, 2, 3));
 		}
 	}
 }
 
-void		julia(t_fractal *fractal)
+void	julia(t_fractal *fractal)
 {
 	t_thread	thread;
 	void		*data[NB_THREADS][4];
@@ -70,9 +70,9 @@ void		julia(t_fractal *fractal)
 		data[i][0] = fractal;
 		thread.id[i] = i;
 		data[i][1] = &(thread.id[i]);
-		data[i][2] = calculateJulia;
-		data[i][3] = iteratingJulia;
-		if ((pthread_create(&(thread.pt[i]), NULL, threadFunction, data[i])) != 0)
+		data[i][2] = calculate_julia;
+		data[i][3] = iterating_julia;
+		if ((pthread_create(&(thread.pt[i]), 0, thread_func, data[i])) != 0)
 			exit(-1);
 	}
 	i = -1;

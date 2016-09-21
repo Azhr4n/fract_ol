@@ -19,10 +19,10 @@ int		main(int ac, char **av)
 {
 	t_var	vars;
 
-	setVars(&vars);
+	set_vars(&vars);
 	if (ac > 1 && ac <= 4)
 	{
-		if (argsValid(&vars, ac, av) == 0)
+		if (args_valid(&vars, ac, av) == 0)
 		{
 			free(vars.args);
 			ft_putendl("Arguments are not valids.");
@@ -33,6 +33,6 @@ int		main(int ac, char **av)
 	}
 	else
 		ft_putendl("Either too much args or not any.");
-	cleanVars(&vars);
+	clean_vars(&vars);
 	return (0);
 }

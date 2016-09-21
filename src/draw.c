@@ -14,7 +14,7 @@
 
 #include "fract_ol.h"
 
-void	pixelSetThread(t_image_data *data, t_vector vec, t_vector start,
+void	pixel_set_thread(t_image_data *data, t_vector vec, t_vector start,
 	int color)
 {
 	data->addr_image[((int)(vec.x - start.x) * data->bpp / 8)
@@ -25,7 +25,7 @@ void	pixelSetThread(t_image_data *data, t_vector vec, t_vector start,
 		+ (int)(vec.y - start.y) * data->size_line + 2] = (color & 0xFF) >> 0;
 }
 
-int		setColor(int iterations, int r, int g, int b)
+int		set_color(int iterations, int r, int g, int b)
 {
 	if (iterations == MAX_ITERATIONS)
 		return (0x000000);

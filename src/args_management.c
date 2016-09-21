@@ -17,21 +17,7 @@
 
 #include <stdio.h>
 
-int			getIndexFocus(int *tab, int len, int focus)
-{
-	int		i;
-
-	i = 0;
-	while (i < len)
-	{
-		if (tab[i] == focus)
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-void		setVars(t_var *vars)
+void		set_vars(t_var *vars)
 {
 	vars->args = (char **)malloc(sizeof(char *) * NB_ARGS);
 	if (vars->args == NULL)
@@ -54,7 +40,7 @@ void		setVars(t_var *vars)
 	vars->fract_set = 0;
 }
 
-void		cleanVars(t_var *vars)
+void		clean_vars(t_var *vars)
 {
 	int	i;
 	int	j;
@@ -70,14 +56,15 @@ void		cleanVars(t_var *vars)
 		{
 			j = -1;
 			while (++j < NB_THREADS)
-				mlx_destroy_image(vars->mlx_core, vars->fractals[i].mlx_image[j]);
+				mlx_destroy_image(vars->mlx_core,
+					vars->fractals[i].mlx_image[j]);
 			mlx_destroy_window(vars->mlx_core, vars->fractals[i].mlx_window);
 		}
 		free(vars->fractals);
 	}
 }
 
-static void	allocateVars(t_var *vars, int index, int type)
+static void	allocate_vars(t_var *vars, int index, int type)
 {
 	int		i;
 
@@ -94,9 +81,11 @@ static void	allocateVars(t_var *vars, int index, int type)
 	vars->fract_set = 1;
 	vars->real_const_val = 0.001;
 	vars->im_const_val = 0.00001;
+	if (type == BUDDHABROT)
+		vars->fractals[index].image_value.list = NULL;
 }
 
-static void	presetStruct(t_var *vars, int ac, char **av)
+static void	preset_struct(t_var *vars, int ac, char **av)
 {
 	int		i;
 	int		j;
@@ -114,13 +103,13 @@ static void	presetStruct(t_var *vars, int ac, char **av)
 		while (j < NB_ARGS)
 		{
 			if (strcmp(av[i], vars->args[j]) == 0)
-				allocateVars(vars, i - 1, j);
+				allocate_vars(vars, i - 1, j);
 			j++;
 		}
 	}
 }
 
-int		argsValid(t_var *vars, int ac, char **av)
+int			args_valid(t_var *vars, int ac, char **av)
 {
 	int		i;
 	int		j;
@@ -129,7 +118,7 @@ int		argsValid(t_var *vars, int ac, char **av)
 	i = 0;
 	while (++i < ac)
 	{
-		strLower(av[i]);
+		str_lower(av[i]);
 		j = 0;
 		safe = 0;
 		while (j < NB_ARGS)
@@ -138,13 +127,13 @@ int		argsValid(t_var *vars, int ac, char **av)
 			{
 				vars->nb_windows++;
 				safe = 1;
-				break;
+				break ;
 			}
 			j++;
 		}
 		if (safe == 0)
-			return 0;
+			return (0);
 	}
-	presetStruct(vars, ac, av);
+	preset_struct(vars, ac, av);
 	return (1);
 }

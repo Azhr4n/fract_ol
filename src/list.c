@@ -15,7 +15,7 @@
 
 #include "fract_ol.h"
 
-t_node	*createNewNode(float x, float y)
+t_node	*create_new_node(float x, float y)
 {
 	t_node	*ptr;
 
@@ -30,7 +30,7 @@ t_node	*createNewNode(float x, float y)
 	return (ptr);
 }
 
-t_node	*insertNodeAtEnd(t_node *node, t_node *new)
+t_node	*insert_node_at_end(t_node *node, t_node *new)
 {
 	t_node	*ptr;
 
@@ -46,7 +46,7 @@ t_node	*insertNodeAtEnd(t_node *node, t_node *new)
 	return (node);
 }
 
-void	clearList(t_node **node)
+void	clear_list(t_node **node)
 {
 	t_node	*next;
 
